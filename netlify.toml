@@ -1,0 +1,35 @@
+[build]
+  publish = "."
+
+# Serve ngx-dashboard-v1.html as the site root
+[[redirects]]
+  from = "/"
+  to = "/ngx-dashboard-v1.html"
+  status = 200
+
+# Catch-all: any unknown path → dashboard
+[[redirects]]
+  from = "/*"
+  to = "/ngx-dashboard-v1.html"
+  status = 200
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

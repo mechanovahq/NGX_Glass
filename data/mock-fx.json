@@ -1,0 +1,9 @@
+[
+  { "pair": "USD/NGN",   "rate": "1,620",    "change": "-0.3%",  "up": false },
+  { "pair": "EUR/NGN",   "rate": "1,754",    "change": "-0.1%",  "up": false },
+  { "pair": "GBP/NGN",   "rate": "2,047",    "change": "-0.2%",  "up": false },
+  { "pair": "NGN/USD",   "rate": "0.000617", "change": "+0.3%",  "up": true  },
+  { "pair": "Brent Oil", "rate": "$72.14",   "change": "-1.2%",  "up": false },
+  { "pair": "Inflation", "rate": "24.48%",   "change": "YoY",    "up": false },
+  { "pair": "MPR",       "rate": "27.25%",   "change": "CBN Rate","up": false }
+]

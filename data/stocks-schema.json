@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NGXGlass Stock Entry",
+  "description": "Schema for a single NGX-listed equity in the STOCKS array",
+  "type": "object",
+  "required": ["r", "sym", "co", "sec", "price", "day", "week", "ytd", "capN", "capV", "vol", "volV", "os", "lo", "hi", "div", "pe", "up"],
+  "properties": {
+    "r":    { "type": "integer",  "description": "Rank by market cap" },
+    "sym":  { "type": "string",   "description": "NGX ticker symbol e.g. ZENITHBANK" },
+    "co":   { "type": "string",   "description": "Full company name" },
+    "sec":  { "type": "string",   "description": "Sector: Banking | Telecoms | Industrial | Oil & Gas | Consumer | Insurance | Utilities | Financial | Healthcare" },
+    "price":{ "type": "number",   "description": "Last close price in NGN (₦)" },
+    "day":  { "type": "number",   "description": "Day price change %" },
+    "week": { "type": "number",   "description": "7-day price change %" },
+    "ytd":  { "type": "number",   "description": "Year-to-date price change %" },
+    "capN": { "type": "string",   "description": "Market cap formatted string e.g. ₦4.29T" },
+    "capV": { "type": "number",   "description": "Market cap numeric value in billions NGN" },
+    "vol":  { "type": "string",   "description": "Volume formatted string e.g. 18.3M" },
+    "volV": { "type": "number",   "description": "Volume numeric value in millions" },
+    "os":   { "type": "string",   "description": "Outstanding shares formatted e.g. 29.4B" },
+    "lo":   { "type": "number",   "description": "52-week low price in NGN" },
+    "hi":   { "type": "number",   "description": "52-week high price in NGN" },
+    "div":  { "type": "number",   "description": "Dividend yield %" },
+    "pe":   { "type": "number",   "description": "Price-to-Earnings ratio" },
+    "up":   { "type": "boolean",  "description": "True if price is above previous close" }
+  }
+}
