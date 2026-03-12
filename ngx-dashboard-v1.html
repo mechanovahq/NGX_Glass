@@ -129,6 +129,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(8,11,14,0.92);backdrop-fil
 .table-tab{padding:5px 12px;font-size:11.5px;font-weight:500;color:var(--muted);border-radius:6px 6px 0 0;cursor:pointer;border:none;background:none;font-family:var(--font);transition:all 0.15s;border-bottom:2px solid transparent;margin-bottom:-1px}
 .table-tab:hover{color:var(--text)}
 .table-tab.active{color:var(--accent-light);border-bottom-color:var(--accent-light);background:var(--surface)}
+.tab-count{font-size:9.5px;font-weight:700;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:1px 5px;color:var(--muted);font-family:var(--mono);margin-left:3px;vertical-align:middle}
 .sector-filter{display:flex;gap:4px;padding:8px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:var(--surface)}
 .sf-btn{padding:3px 10px;font-size:10.5px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-family:var(--font);transition:all 0.15s;white-space:nowrap}
 .sf-btn:hover{border-color:var(--border-strong);color:var(--text)}
@@ -358,6 +359,14 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
 .alert-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0;transition:color 0.15s;line-height:1}
 .alert-del:hover{color:var(--red)}
 .empty-alerts{text-align:center;color:var(--muted);font-size:12px;padding:16px 0}
+.sym-drop{position:absolute;left:0;right:0;top:calc(100% + 3px);background:var(--surface);border:1px solid var(--border-strong);border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,0.45);z-index:900;max-height:210px;overflow-y:auto}
+.sym-drop-item{display:flex;align-items:center;gap:9px;padding:8px 12px;cursor:pointer;transition:background 0.1s;font-size:12px}
+.sym-drop-item:hover,.sym-drop-item.focused{background:rgba(255,255,255,0.06)}
+[data-theme="light"] .sym-drop-item:hover,[data-theme="light"] .sym-drop-item.focused{background:rgba(0,0,0,0.05)}
+.sym-drop-sym{font-weight:700;font-size:12px;min-width:90px;color:var(--text)}
+.sym-drop-co{font-size:10.5px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sym-drop-sec{font-size:9.5px;color:var(--muted);font-family:var(--mono);flex-shrink:0}
+.sym-drop-empty{padding:12px;text-align:center;font-size:12px;color:var(--muted)}
 .alerts-search-wrap{position:relative;margin-top:14px;margin-bottom:2px}
 .alerts-search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none}
 .alerts-search{width:100%;box-sizing:border-box;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 10px 7px 30px;font-size:12px;font-family:var(--font);color:var(--text);outline:none;transition:border-color 0.15s}
@@ -445,7 +454,44 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
 
 /* ═══════ RESPONSIVE ═══════ */
 @media(max-width:1280px){.stat-grid{grid-template-columns:repeat(4,1fr)}.two-col{grid-template-columns:1fr}.three-col{grid-template-columns:1fr 1fr}.newsletter-form{display:none}}
-@media(max-width:768px){.stat-grid{grid-template-columns:repeat(2,1fr)}.three-col{grid-template-columns:1fr}.nav-tabs{display:none}.nav-search-btn{display:none}.folio-cta .folio-sub{display:none}}
+@media(max-width:768px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .three-col{grid-template-columns:1fr}
+  .nav-tabs{display:none}
+  .nav-search-btn{display:none}
+  .folio-cta .folio-sub{display:none}
+  .page-header{flex-direction:column;align-items:flex-start;gap:10px}
+  .header-right{width:100%;justify-content:space-between}
+  .asi-badge{font-size:12px}
+  .tf-group{display:flex;flex-wrap:wrap;gap:4px}
+  .two-col{grid-template-columns:1fr}
+  .folio-cta{flex-direction:column;gap:10px}
+  .newsletter-strip{display:none}
+  .panel-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .fi-tabs{flex-wrap:wrap}
+  .table-tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .table-tab{white-space:nowrap;flex-shrink:0}
+  .sector-filter{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .info-box{max-height:95vh;border-radius:12px 12px 0 0;position:fixed;bottom:0;width:100%;max-width:100vw}
+  .modal-box{width:95vw;max-height:90vh;overflow-y:auto}
+  .ticker-strip{font-size:10px}
+  table{font-size:11px}
+  .sym-cell>div{gap:5px}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:repeat(2,1fr);font-size:11px}
+  .stat-value{font-size:16px}
+  .fx-strip{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+  .fx-item{flex-shrink:0}
+  .page{padding:10px}
+  .nav-inner{padding:0 10px}
+  .nav-logo-text{font-size:13px}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .footer-bottom{flex-direction:column;align-items:flex-start}
+  .cs-box,.info-box{width:98vw}
+  .alert-type-row{flex-direction:column;gap:6px}
+  .alert-type-btn{width:100%}
+}
 
 /* ═══════ SITE FOOTER ═══════ */
 .site-footer{background:var(--surface);border-top:1px solid var(--border);padding:44px 20px 24px;margin-top:0}
@@ -672,9 +718,10 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
       <button class="modal-close" onclick="closeAlert()">&#215;</button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
+      <div class="form-group" style="position:relative">
         <label class="form-label">Stock Symbol</label>
-        <input class="form-input" id="alertSym" placeholder="e.g. ZENITHBANK" style="text-transform:uppercase"/>
+        <input class="form-input" id="alertSym" placeholder="Search symbol or company name…" style="text-transform:uppercase" autocomplete="off" oninput="alertSymSearch()" onkeydown="alertSymKey(event)"/>
+        <div id="alertSymDrop" class="sym-drop" style="display:none"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Alert Condition</label>
@@ -1088,13 +1135,13 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
   <div class="page-header">
     <div>
       <div class="page-title"><span class="live-dot"></span>NGX Market Overview</div>
-      <div class="page-meta">Nigerian Exchange Group &mdash; Feb 27, 2026 close &nbsp;|&nbsp; 823.8M shares &nbsp;&middot;&nbsp; &#8358;34.7B turnover &nbsp;&middot;&nbsp; 39 gainers &middot; 25 losers &middot; 67 unchanged</div>
+      <div class="page-meta" id="market-meta">Nigerian Exchange Group &mdash; <span id="market-date">Mar 10, 2026</span> close &nbsp;|&nbsp; 956.2M shares &nbsp;&middot;&nbsp; &#8358;34.71B turnover &nbsp;&middot;&nbsp; <span id="meta-adv" style="color:var(--accent-light)"></span> gainers &middot; <span id="meta-dec" style="color:var(--red)"></span> losers &middot; <span id="meta-unc"></span> unchanged</div>
     </div>
     <div class="header-right">
-      <div class="asi-badge">
+<div class="asi-badge">
         <span style="font-size:10px;color:var(--muted);letter-spacing:0.4px">ASI</span>
-        <span class="asi-val">192,826</span>
-        <span class="asi-chg dn">&#9660; 741 (-0.38%)</span>
+        <span class="asi-val">109,142</span>
+        <span class="asi-chg up">&#9650; 674 (+0.62%)</span>
       </div>
       <div class="tf-group">
         <button class="tf">1D</button><button class="tf active">1W</button>
@@ -1173,7 +1220,7 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">Top Movers</div>
-          <span class="panel-tag">Week ended Feb 27, 2026</span>
+          <span class="panel-tag">Week ended Mar 07, 2026</span>
         </div>
         <div class="movers-grid" id="movers"></div>
       </div>
@@ -1256,7 +1303,7 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">NGX Indices</div>
-          <span class="panel-tag">Mar 2, 2026</span>
+          <span class="panel-tag">Mar 10, 2026</span>
         </div>
         <div id="indices-list"></div>
       </div>
@@ -1269,13 +1316,17 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
   <div class="panel" style="margin-bottom:18px">
     <div class="panel-header">
       <div class="panel-title">NGX Listed Equities</div>
-      <div style="font-size:10.5px;color:var(--muted)">Refreshes every 20 min during market hours</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span id="price-status-dot" style="width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0"></span>
+        <span id="price-status-text" style="font-size:10.5px;color:var(--muted)">Loading live prices…</span>
+      </div>
     </div>
     <!-- View Tabs -->
     <div class="table-tabs">
-      <button class="table-tab active" data-view="all" onclick="setView(this,'all')">All</button>
-      <button class="table-tab" data-view="gainers" onclick="setView(this,'gainers')">Gainers</button>
-      <button class="table-tab" data-view="losers" onclick="setView(this,'losers')">Losers</button>
+      <button class="table-tab active" data-view="all" onclick="setView(this,'all')">All <span id="tab-count-all" class="tab-count"></span></button>
+      <button class="table-tab" data-view="gainers" onclick="setView(this,'gainers')"><span style="color:var(--accent-light)">▲</span> Advancing <span id="tab-count-gainers" class="tab-count"></span></button>
+      <button class="table-tab" data-view="losers" onclick="setView(this,'losers')"><span style="color:var(--red)">▼</span> Declining <span id="tab-count-losers" class="tab-count"></span></button>
+      <button class="table-tab" data-view="unchanged" onclick="setView(this,'unchanged')">— Unchanged <span id="tab-count-unchanged" class="tab-count"></span></button>
       <button class="table-tab" data-view="active" onclick="setView(this,'active')">Most Active</button>
       <button class="table-tab" data-view="watchlist" onclick="setView(this,'watchlist')">&#9733; Watchlist</button>
     </div>
@@ -1345,7 +1396,7 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
     <div class="panel-header">
       <div style="display:flex;align-items:center;gap:10px">
         <div class="panel-title">Fixed Income &amp; Money Markets</div>
-        <span class="panel-tag">Mar 03, 2026</span>
+        <span class="panel-tag">Mar 10, 2026</span>
       </div>
       <div class="fi-tabs" id="fi-tabs">
         <button class="fi-tab active" onclick="setFITab(this,'tbills')">T-Bills</button>
@@ -1511,7 +1562,7 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
   <div class="page-header">
     <div>
       <div class="page-title"><span class="live-dot"></span>Market Heatmap</div>
-      <div class="page-meta">Sector performance &amp; stock bubble map — NGX Feb 27, 2026 close</div>
+      <div class="page-meta">Sector performance &amp; stock bubble map — NGX Mar 10, 2026 close</div>
     </div>
     <div class="header-right">
       <div class="tf-group">
@@ -1524,7 +1575,7 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
   <div style="margin-bottom:18px">
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">Sector Performance — Week ending Feb 27, 2026</div>
+        <div class="panel-title">Sector Performance — Week ending Mar 07, 2026</div>
         <span class="panel-tag">% Change WTD</span>
       </div>
       <div style="padding:16px">
@@ -1696,14 +1747,14 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">Market Summary</div>
-          <span class="panel-tag">Feb 27, 2026</span>
+          <span class="panel-tag">Mar 10, 2026</span>
         </div>
         <div style="padding:14px 16px">
           <div style="font-size:12px;line-height:1.7;color:var(--muted-2)">
-            The NGX closed the week mixed with the All-Share Index declining 0.38% to <strong style="color:var(--text)">192,826 points</strong>. Banking sector led activity with ZENITHBANK and GTCO among top traded equities. Market capitalisation stood at <strong style="color:var(--text)">₦116.8T</strong>.<br><br>
-            <strong style="color:var(--text)">Gainers:</strong> NGXGROUP (+10%), ARADEL (+9.99%), OANDO (+9.34%)<br>
-            <strong style="color:var(--text)">Losers:</strong> CUSTODIAN (-10%), MECURE (-9.97%), MANSARD (-7.60%)<br><br>
-            <span style="color:var(--muted);font-size:10.5px">Data: NGX Group | Updated: Feb 27, 2026 close</span>
+            The NGX All-Share Index rose 0.62% to <strong style="color:var(--text)">109,142 points</strong> on Monday. Banking sector led activity with ZENITHBANK and GTCO among top traded equities. Market capitalisation stood at <strong style="color:var(--text)">₦117.6T</strong>.<br><br>
+            <strong style="color:var(--text)">Gainers:</strong> DANGCEM (+3.97%), TRANSCORP (+6.63%), WEMABANK (+3.51%)<br>
+            <strong style="color:var(--text)">Losers:</strong> UBA (-3.27%), ACCESSCORP (-2.07%), FCMB (-2.88%)<br><br>
+            <span style="color:var(--muted);font-size:10.5px">Data: NGX Group | Updated: Mar 10, 2026 close</span>
           </div>
         </div>
       </div>
@@ -1807,6 +1858,7 @@ if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
       authUser = { name: u.user_metadata?.name || u.email.split('@')[0], email: u.email };
       localStorage.setItem('ngxglass-user', JSON.stringify(authUser));
       updateNavAuth();
+      closeLogin();
     } else if (_event === 'SIGNED_OUT') {
       authUser = null;
       localStorage.removeItem('ngxglass-user');
@@ -1826,7 +1878,7 @@ const STOCKS = [
   {r:4, sym:'AIRTELAFRI',co:'Airtel Africa Plc',           sec:'Telecoms',    price:2270.00,  day:0.00,  week:0.00,  ytd:5.3,   capN:'N8.53T', capV:8530, vol:'0.8M', volV:0.8,  os:'3.76B', lo:2019,  hi:2400,  div:3.2, pe:14.8,up:true},
   {r:5, sym:'BUACEMENT', co:'BUA Cement Plc',              sec:'Industrial',  price:219.00,   day:0.00,  week:0.00,  ytd:136.0, capN:'N8.43T', capV:8430, vol:'5.6M', volV:5.6,  os:'33.9B', lo:93,    hi:219,   div:2.8, pe:24.1,up:true},
   {r:6, sym:'SEPLAT',    co:'Seplat Energy',               sec:'Oil & Gas',   price:9099.90,  day:0.00,  week:0.00,  ytd:56.6,  capN:'N7.88T', capV:7880, vol:'0.4M', volV:0.4,  os:'588M',  lo:5200,  hi:9100,  div:2.1, pe:8.4, up:true},
-  {r:7, sym:'ARADEL',    co:'Aradel Holdings',             sec:'Oil & Gas',   price:1192.30,  day:9.99,  week:9.99,  ytd:69.4,  capN:'N7.01T', capV:7010, vol:'1.9M', volV:1.9,  os:'5.88B', lo:680,   hi:1192,  div:1.4, pe:6.8, up:true},
+  {r:7, sym:'ARADEL',    co:'Aradel Holdings',             sec:'Oil & Gas',   price:1300.00,  day:9.04,  week:9.04,  ytd:84.6,  capN:'N7.64T', capV:7640, vol:'1.9M', volV:1.9,  os:'5.88B', lo:680,   hi:1300,  div:1.4, pe:7.4, up:true},
   {r:8, sym:'GTCO',      co:'Guaranty Trust Hldg',         sec:'Banking',     price:117.95,   day:0.81,  week:0.81,  ytd:112.6, capN:'N6.98T', capV:6980, vol:'18.3M',volV:18.3, os:'29.4B', lo:55,    hi:118,   div:6.8, pe:4.2, up:true},
   {r:9, sym:'ZENITHBANK',co:'Zenith Bank Plc',             sec:'Banking',     price:91.95,    day:1.04,  week:1.04,  ytd:102.1, capN:'N4.36T', capV:4360, vol:'79.4M',volV:79.4, os:'31.4B', lo:45.5,  hi:92,    div:7.4, pe:3.8, up:true},
   {r:10,sym:'GEREGU',    co:'Geregu Power Plc',            sec:'Utilities',   price:1141.50,  day:0.00,  week:0.00,  ytd:40.3,  capN:'N3.70T', capV:3700, vol:'1.1M', volV:1.1,  os:'2.5B',  lo:760,   hi:1142,  div:0.9, pe:21.3,up:true},
@@ -1847,7 +1899,7 @@ const STOCKS = [
   {r:23,sym:'STANBIC',   co:'Stanbic IBTC Holdings',       sec:'Financial',   price:126.00,   day:3.28,  week:3.28,  ytd:165.5, capN:'N1.18T', capV:1180, vol:'1.8M', volV:1.8,  os:'9.38B', lo:42,    hi:126,   div:5.8, pe:7.2, up:true},
   // ── Oil & Gas ──
   {r:24,sym:'CONOIL',    co:'Conoil Plc',                  sec:'Oil & Gas',   price:169.00,   day:0.00,  week:0.00,  ytd:53.1,  capN:'N369B',  capV:369,  vol:'0.6M', volV:0.6,  os:'2.18B', lo:100,   hi:169,   div:3.8, pe:7.6, up:true},
-  {r:25,sym:'OANDO',     co:'Oando Plc',                   sec:'Oil & Gas',   price:45.70,    day:9.34,  week:9.34,  ytd:215.2, capN:'N1.20T', capV:1200, vol:'3.4M', volV:3.4,  os:'26.2B', lo:10.5,  hi:46,    div:0.0, pe:12.1,up:true},
+  {r:25,sym:'OANDO',     co:'Oando Plc',                   sec:'Oil & Gas',   price:45.70,    day:9.34,  week:9.34,  ytd:35.2,  capN:'N1.20T', capV:1200, vol:'3.4M', volV:3.4,  os:'26.2B', lo:10.5,  hi:46,    div:0.0, pe:12.1,up:true},
   {r:26,sym:'TOTAL',     co:'TotalEnergies Mktg Nigeria',  sec:'Oil & Gas',   price:640.00,   day:0.00,  week:0.00,  ytd:38.5,  capN:'N228B',  capV:228,  vol:'0.15M',volV:0.15, os:'357M',  lo:380,   hi:640,   div:4.2, pe:9.8, up:true},
   {r:27,sym:'JAPAULGOLD',co:'Japaul Gold & Ventures',      sec:'Oil & Gas',   price:3.99,     day:3.37,  week:3.37,  ytd:86.4,  capN:'N177B',  capV:177,  vol:'57.2M',volV:57.2, os:'44.4B', lo:1.8,   hi:4.05,  div:0.0, pe:21.5,up:true},
   // ── Consumer ──
@@ -2163,6 +2215,27 @@ const STOCK_DOMAINS = {
   // ── Education / Media ──
   'LEARNAFRCA':  'learnafrica.com.ng',
   'ACADEMY':     'academypress.com.ng',
+  // ── Services / Media (additions) ──
+  'DAARCOMM':    'daarcomm.com',
+  'MCNICHOLS':   'mcnicholsplc.com',
+  'TRANSEXPR':   'trans-nationwide.com',
+  'CAPITALHOTEL':'capitalhotel.com.ng',
+  // ── Financial (additions) ──
+  'CILEASING':   'cileasing.com',
+  'RESORTSAL':   'resortsl.com',
+  'DEAPCAP':     'deapcapital.com',
+  // ── Mining ──
+  'MULTIVERSE':  'multiversemining.com',
+  'RONCHESS':    'ronchess.com',
+  // ── Industrial (additions) ──
+  'TRIPPLEG':    'triplegee.com.ng',
+  'NEWPAK':      'newpackcontainers.com',
+  'VANLEER':     'vanleer.com',
+  // ── Technology (additions) ──
+  'NSLTECH':     'nsltechplc.com',
+  // ── Real Estate ──
+  'UPDC':        'updcplc.com',
+  'MIXTA':       'mixtaafrica.com',
 };
 
 const _LOGO_SEC_CLR = {
@@ -2221,7 +2294,7 @@ const tickerData = [
   {s:'MTNN',      p:'783.00',   d:'+3.02%', up:true},  {s:'BUAFOODS',  p:'789.40',   d:'+0.00%', up:true},
   {s:'DANGCEM',   p:'809.90',   d:'+3.97%', up:true},  {s:'AIRTELAFRI',p:'2,270.00', d:'+0.00%', up:true},
   {s:'BUACEMENT', p:'219.00',   d:'+0.00%', up:true},  {s:'SEPLAT',    p:'9,099.90', d:'+0.00%', up:true},
-  {s:'ARADEL',    p:'1,192.30', d:'+9.99%', up:true},  {s:'GTCO',      p:'117.95',   d:'+0.81%', up:true},
+  {s:'ARADEL',    p:'1,300.00', d:'+9.04%', up:true},  {s:'GTCO',      p:'117.95',   d:'+0.81%', up:true},
   {s:'ZENITHBANK',p:'91.95',    d:'+1.04%', up:true},  {s:'UBA',       p:'47.20',    d:'-3.27%', up:false},
   {s:'ACCESSCORP',p:'25.95',    d:'-2.07%', up:false}, {s:'FIRSTHOLDCO',p:'53.75',   d:'-0.37%', up:false},
   {s:'WAPCO',     p:'207.50',   d:'+3.75%', up:true},  {s:'NESTLE',    p:'3,100.00', d:'+0.00%', up:true},
@@ -2239,16 +2312,33 @@ const ticker = document.getElementById('ticker');
 // ═══════════════════════════════════════════════════
 // FX STRIP
 // ═══════════════════════════════════════════════════
-const fxData=[{p:'USD/NGN',r:'1,620',d:'-0.3%',up:false},{p:'EUR/NGN',r:'1,754',d:'-0.1%',up:false},{p:'GBP/NGN',r:'2,047',d:'-0.2%',up:false},{p:'NGN/USD',r:'0.000617',d:'+0.3%',up:true},{p:'Brent Oil',r:'$72.14',d:'-1.2%',up:false},{p:'Inflation',r:'24.48%',d:'YoY',up:false},{p:'MPR',r:'27.25%',d:'CBN Rate',up:false}];
+const fxData=[{p:'USD/NGN',r:'1,376.54',d:'-0.4%',up:false},{p:'EUR/NGN',r:'1,486.66',d:'+0.1%',up:true},{p:'GBP/NGN',r:'1,775.74',d:'-0.1%',up:false},{p:'NGN/USD',r:'0.000727',d:'+0.4%',up:true},{p:'Brent Oil',r:'$74.15',d:'+0.8%',up:true},{p:'Inflation',r:'24.48%',d:'Jan 2026',up:false},{p:'MPR',r:'27.50%',d:'CBN Rate',up:false}];
 const fxStrip=document.getElementById('fx-strip');
 fxData.forEach(f=>{fxStrip.innerHTML+=`<div class="fx-cell"><span class="fx-pair">${f.p}</span><span class="fx-rate">${f.r}</span><span class="fx-chg ${f.up?'up':'dn'}">${f.d}</span></div>`;});
 
 // ═══════════════════════════════════════════════════
 // STAT GRID
 // ═══════════════════════════════════════════════════
-const stats=[{l:'Total Mkt Cap',v:'&#8358;125.5T',sub:'~$77.5B',d:'+39.65%',up:true},{l:'24h Turnover',v:'&#8358;35.07B',sub:'84,186 deals',d:'+1.01%',up:true},{l:'Shares Traded',v:'789.78M',sub:'156 equities',d:'+0.3%',up:true},{l:'NGX ASI',v:'192,826',sub:'YTD +23.91%',d:'+0.00%',up:true},{l:'NGX 30 Index',v:'3,847.2',sub:'Large caps',d:'+0.00%',up:true},{l:'Top Gainer',v:'+9.99%',sub:'ARADEL &#8358;1,192.30',d:'',up:true},{l:'Top Loser',v:'-10.00%',sub:'CUSTODIAN &#8358;61.20',d:'',up:false}];
+// compute live advancing / declining / unchanged counts
+const _adv=STOCKS.filter(s=>s.day>0).length;
+const _dec=STOCKS.filter(s=>s.day<0).length;
+const _unc=STOCKS.filter(s=>s.day===0).length;
+const _topG=[...STOCKS].filter(s=>s.day>0).sort((a,b)=>b.day-a.day)[0];
+const _topL=[...STOCKS].filter(s=>s.day<0).sort((a,b)=>a.day-b.day)[0];
+const stats=[
+  {l:'Total Mkt Cap',   v:'&#8358;62.82T',    sub:'~$39.2B',                    d:'+0.38%', up:true},
+  {l:'24h Turnover',    v:'&#8358;34.71B',    sub:'81,429 deals',                d:'-1.01%', up:false},
+  {l:'Shares Traded',   v:'823.8M',           sub:'156 equities',                d:'-4.2%',  up:false},
+  {l:'NGX ASI',         v:'192,826',          sub:'YTD +5.91%',                  d:'-0.38%', up:false},
+  {l:'NGX 30 Index',    v:'3,891.4',          sub:'Large caps',                  d:'-0.12%', up:false},
+  {l:'Market Breadth',  v:`${_adv}↑ ${_dec}↓`, sub:`${_unc} unchanged`,         d:'', up:_adv>_dec},
+  {l:'Top Gainer',      v:`+${_topG?.day.toFixed(2)}%`, sub:`${_topG?.sym} &#8358;${_topG?.price}`, d:'', up:true},
+];
 const sg=document.getElementById('stat-grid');
 stats.forEach(s=>{sg.innerHTML+=`<div class="stat-card"><div class="stat-label">${s.l}</div><div class="stat-value">${s.v}</div><div class="stat-sub">${s.sub}</div>${s.d?`<div class="stat-badge ${s.up?'badge-up':'badge-dn'}">${s.up?'&#9650;':'&#9660;'} ${s.d}</div>`:''}</div>`;});
+// populate live breadth counts in page-meta
+const _mAdv=document.getElementById('meta-adv');const _mDec=document.getElementById('meta-dec');const _mUnc=document.getElementById('meta-unc');
+if(_mAdv)_mAdv.textContent=_adv;if(_mDec)_mDec.textContent=_dec;if(_mUnc)_mUnc.textContent=_unc;
 
 // ═══════════════════════════════════════════════════
 // BUBBLE HEATMAP — Canvas-based physics bubble chart
@@ -2275,7 +2365,7 @@ const BUBBLE_STOCKS = [
   {sym:'WAPCO',       co:'Lafarge Africa',   sec:'Industrial', price:207.50,  day:3.75,  cap:3330, vol:'6.3M'},
   // Oil & Gas
   {sym:'SEPLAT',      co:'Seplat Energy',    sec:'Oil & Gas',  price:9099.90, day:0.00,  cap:7880, vol:'0.4M'},
-  {sym:'ARADEL',      co:'Aradel Holdings',  sec:'Oil & Gas',  price:1192.30, day:9.99,  cap:7010, vol:'1.9M'},
+  {sym:'ARADEL',      co:'Aradel Holdings',  sec:'Oil & Gas',  price:1300.00, day:9.04,  cap:7640, vol:'1.9M'},
   {sym:'OANDO',       co:'Oando Plc',        sec:'Oil & Gas',  price:45.70,   day:9.34,  cap:1200, vol:'3.4M'},
   {sym:'JAPAULGOLD',  co:'Japaul Gold',      sec:'Oil & Gas',  price:3.99,    day:3.37,  cap:177,  vol:'57.2M'},
   {sym:'CONOIL',      co:'Conoil Plc',       sec:'Oil & Gas',  price:169.00,  day:0.00,  cap:369,  vol:'0.6M'},
@@ -2560,7 +2650,7 @@ window.addEventListener('resize', () => {
 // ═══════════════════════════════════════════════════
 // MOVERS
 // ═══════════════════════════════════════════════════
-const gainers=[{sym:'ARADEL',sec:'Oil & Gas',price:'1,192.30',pct:'+9.99'},{sym:'NGXGROUP',sec:'Financial',price:'136.40',pct:'+10.00'},{sym:'TRANSCORP',sec:'Conglomerate',price:'53.90',pct:'+6.63'},{sym:'OANDO',sec:'Oil & Gas',price:'45.70',pct:'+9.34'},{sym:'DANGCEM',sec:'Industrial',price:'809.90',pct:'+3.97'}];
+const gainers=[{sym:'ARADEL',sec:'Oil & Gas',price:'1,300.00',pct:'+9.04'},{sym:'NGXGROUP',sec:'Financial',price:'136.40',pct:'+10.00'},{sym:'TRANSCORP',sec:'Conglomerate',price:'53.90',pct:'+6.63'},{sym:'OANDO',sec:'Oil & Gas',price:'45.70',pct:'+9.34'},{sym:'DANGCEM',sec:'Industrial',price:'809.90',pct:'+3.97'}];
 const losers=[{sym:'CUSTODIAN',sec:'Insurance',price:'61.20',pct:'-10.00'},{sym:'MECURE',sec:'Healthcare',price:'75.85',pct:'-9.97'},{sym:'CHAMPION',sec:'Consumer',price:'17.00',pct:'-5.56'},{sym:'MANSARD',sec:'Insurance',price:'17.00',pct:'-7.60'},{sym:'UBA',sec:'Banking',price:'47.20',pct:'-3.27'}];
 const mDiv=document.getElementById('movers');
 let gH=`<div class="movers-col"><div class="movers-title up">&#9650; Top Gainers</div>`;
@@ -2606,8 +2696,13 @@ function renderTable(){
   // view filter
   if(currentView==='gainers') data=data.filter(s=>s.day>0).sort((a,b)=>b.day-a.day);
   else if(currentView==='losers') data=data.filter(s=>s.day<0).sort((a,b)=>a.day-b.day);
+  else if(currentView==='unchanged') data=data.filter(s=>s.day===0);
   else if(currentView==='active') data=[...data].sort((a,b)=>b.volV-a.volV);
   else if(currentView==='watchlist') data=data.filter(s=>watchlist.has(s.sym));
+  // update tab counts
+  const _base=currentSector!=='All Sectors'?STOCKS.filter(s=>s.sec===currentSector):STOCKS;
+  const _tc={all:_base.length,gainers:_base.filter(s=>s.day>0).length,losers:_base.filter(s=>s.day<0).length,unchanged:_base.filter(s=>s.day===0).length};
+  Object.entries(_tc).forEach(([k,v])=>{const el=document.getElementById('tab-count-'+k);if(el)el.textContent=v;});
   // sort
   if(sortKey){
     const keyMap={price:'price',day:'day',week:'week',ytd:'ytd',cap:'capV',vol:'volV'};
@@ -2814,7 +2909,7 @@ function renderFI() {
         }).join('')
       + `</tbody></table>${meta}`;
   } else if (_fiTab === 'money') {
-    const meta = `<div class="fi-meta"><span class="fi-meta-item">Source: <strong>CBN / FMDQ</strong></span><span class="fi-meta-item">As at: <strong>Mar 03, 2026</strong></span></div>`;
+    const meta = `<div class="fi-meta"><span class="fi-meta-item">Source: <strong>CBN / FMDQ</strong></span><span class="fi-meta-item">As at: <strong>Mar 10, 2026</strong></span></div>`;
     el.innerHTML = `<table class="fi-table"><thead><tr><th>Instrument</th><th>Rate (%)</th><th>Previous (%)</th><th>Change (bps)</th><th>Category</th></tr></thead><tbody>`
       + FIXED_INCOME.money.map(m => {
           const chg = ((m.rate - m.prev) * 100).toFixed(0);
@@ -2827,6 +2922,105 @@ function renderFI() {
 }
 // Initial render
 (function(){ const fi=document.getElementById('fi-body'); if(fi) renderFI(); })();
+
+// ═══════════════════════════════════════════════════
+// LIVE PRICE FEED — Yahoo Finance via Netlify proxy
+// ═══════════════════════════════════════════════════
+
+let _priceRetryCount = 0;
+
+function _setPriceStatus(state, text) {
+  const dot  = document.getElementById('price-status-dot');
+  const label = document.getElementById('price-status-text');
+  if (!dot || !label) return;
+  const colors = { live:'#22c55e', stale:'#f59e0b', error:'#ef4444', loading:'#64748b' };
+  dot.style.background = colors[state] || colors.loading;
+  dot.style.animation  = state === 'live' ? 'pulse-dot 2s ease-in-out infinite' : 'none';
+  label.textContent = text;
+}
+
+async function fetchLivePrices() {
+  _setPriceStatus('loading', 'Fetching live prices…');
+  try {
+    const res = await fetch('/api/prices');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const quotes = data?.result || [];
+    if (!quotes.length) throw new Error('No quotes returned');
+
+    let updated = 0;
+    quotes.forEach(q => {
+      const stock = STOCKS.find(s => s.sym === q.sym);
+      if (!stock) return;
+      stock.price = Math.round(q.price * 100) / 100;
+      stock.day   = Math.round(q.changePct * 100) / 100;
+      stock.up    = stock.day >= 0;
+      updated++;
+      // mirror to BUBBLE_STOCKS if present
+      const bs = BUBBLE_STOCKS ? BUBBLE_STOCKS.find(b => b.sym === q.sym) : null;
+      if (bs) { bs.price = stock.price; bs.day = stock.day; }
+    });
+
+    // refresh all rendered UI
+    renderTable();
+    if (typeof renderFI === 'function') renderFI();
+    // rebuild live counts in page meta
+    const adv = STOCKS.filter(s=>s.day>0).length;
+    const dec = STOCKS.filter(s=>s.day<0).length;
+    const unc = STOCKS.filter(s=>s.day===0).length;
+    const mA = document.getElementById('meta-adv');
+    const mD = document.getElementById('meta-dec');
+    const mU = document.getElementById('meta-unc');
+    if(mA) mA.textContent = adv;
+    if(mD) mD.textContent = dec;
+    if(mU) mU.textContent = unc;
+
+    const now = new Date();
+    const watNow = new Date(now.toLocaleString('en-US',{timeZone:'Africa/Lagos'}));
+    const t = watNow.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' WAT';
+    // Update the market date stamp to today's date
+    const dateEl = document.getElementById('market-date');
+    if (dateEl) {
+      dateEl.textContent = watNow.toLocaleDateString('en-NG',{month:'short',day:'2-digit',year:'numeric'});
+    }
+    _setPriceStatus('live', `Live · ${updated} stocks updated · ${t}`);
+    _priceRetryCount = 0;
+  } catch(err) {
+    _priceRetryCount++;
+    console.warn('[NGXGlass] Price fetch failed:', err.message);
+    const retryMins = _priceRetryCount > 3 ? 5 : 1;
+    _setPriceStatus('error', `Price fetch failed · retrying in ${retryMins}m`);
+    // Retry sooner than the fixed interval if we're still failing
+    if (_priceRetryCount <= 5) setTimeout(fetchLivePrices, retryMins * 60_000);
+  }
+}
+
+// NGX market hours: Mon–Fri, 10:00–14:30 WAT (UTC+1)
+function _isMarketOpen() {
+  const now = new Date();
+  const day = now.getUTCDay(); // 0=Sun, 6=Sat
+  if (day === 0 || day === 6) return false;
+  const watMinutes = (now.getUTCHours() + 1) * 60 + now.getUTCMinutes();
+  return watMinutes >= 600 && watMinutes <= 870; // 10:00–14:30 WAT
+}
+
+// Initial fetch on load
+fetchLivePrices();
+
+// During market hours: refresh every 60 s. Outside hours: every 5 min (catch after-close snapshot)
+setInterval(() => {
+  fetchLivePrices();
+}, _isMarketOpen() ? 60_000 : 300_000);
+
+// Adaptive interval: switch to 60s when market opens
+setInterval(() => {
+  // reschedule nothing — the main interval handles it;
+  // but we re-fetch immediately when the market opens/closes to flip status
+  const dot = document.getElementById('price-status-dot');
+  if (dot && dot.style.background === '#22c55e' && !_isMarketOpen()) {
+    _setPriceStatus('stale', 'Market closed · prices at last close');
+  }
+}, 60_000);
 
 // ═══════════════════════════════════════════════════
 // MARKET STATUS + CLOCK
@@ -2849,8 +3043,20 @@ function updateClock(){
   } else {
     statusEl.className='market-banner closed';
     dot.className='status-dot closed';
-    txt.textContent='NGX Market Closed — Opens Monday 10:00 WAT';
+    txt.textContent='NGX Market Closed — Opens ' + _nextOpenLabel(wat) + ' 10:00 WAT';
   }
+}
+function _nextOpenLabel(wat) {
+  const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const day=wat.getDay(), h=wat.getHours();
+  // weekday before open → today
+  if(day>=1&&day<=5&&h<10) return 'today';
+  // find next weekday
+  for(let ahead=1;ahead<=3;ahead++){
+    const nd=(day+ahead)%7;
+    if(nd>=1&&nd<=5) return ahead===1?'tomorrow':DAYS[nd];
+  }
+  return 'Monday';
 }
 updateClock();
 setInterval(updateClock,1000);
@@ -2934,6 +3140,65 @@ function renderAlerts(){
   el.innerHTML=`<div class="alerts-count-bar"><span>ACTIVE ALERTS (${alerts.length})</span>${q?`<span style="color:var(--accent-light)">${filtered.length} match</span>`:''}</div>`+filtered.map((a,i)=>{const realIdx=alerts.indexOf(a);return`<div class="alert-row"><span class="alert-sym">${a.sym}</span><span class="alert-cond">${a.type==='above'?'▲ rises above':'▼ drops below'}</span><span class="alert-price ${a.type==='above'?'up':'dn'}">&#8358;${a.price.toFixed(2)}</span><button class="alert-del" onclick="removeAlert(${realIdx})">&#215;</button></div>`;}).join('');
 }
 document.getElementById('alertModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAlert();});
+
+// ── Alert symbol autocomplete ──
+let _symDropIdx = -1;
+function alertSymSearch() {
+  const inp = document.getElementById('alertSym');
+  const drop = document.getElementById('alertSymDrop');
+  const q = inp.value.trim().toUpperCase();
+  _symDropIdx = -1;
+  if (!q) { drop.style.display = 'none'; return; }
+  const matches = STOCKS.filter(s =>
+    s.sym.includes(q) || s.co.toUpperCase().includes(q)
+  ).slice(0, 8);
+  if (!matches.length) {
+    drop.innerHTML = `<div class="sym-drop-empty">No stock found for "${q}"</div>`;
+    drop.style.display = 'block'; return;
+  }
+  drop.innerHTML = matches.map((s,i) =>
+    `<div class="sym-drop-item" data-sym="${s.sym}" onmousedown="pickAlertSym('${s.sym}')">
+      ${slogo(s.sym,20)}
+      <span class="sym-drop-sym">${s.sym}</span>
+      <span class="sym-drop-co">${s.co}</span>
+      <span class="sym-drop-sec">${s.sec}</span>
+    </div>`
+  ).join('');
+  drop.style.display = 'block';
+}
+function pickAlertSym(sym) {
+  const inp = document.getElementById('alertSym');
+  inp.value = sym;
+  document.getElementById('alertSymDrop').style.display = 'none';
+  document.getElementById('alertPrice').focus();
+}
+function alertSymKey(e) {
+  const drop = document.getElementById('alertSymDrop');
+  const items = drop.querySelectorAll('.sym-drop-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    _symDropIdx = Math.min(_symDropIdx + 1, items.length - 1);
+    items.forEach((el,i) => el.classList.toggle('focused', i === _symDropIdx));
+    if(items[_symDropIdx]) items[_symDropIdx].scrollIntoView({block:'nearest'});
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    _symDropIdx = Math.max(_symDropIdx - 1, 0);
+    items.forEach((el,i) => el.classList.toggle('focused', i === _symDropIdx));
+  } else if (e.key === 'Enter' && _symDropIdx >= 0) {
+    e.preventDefault();
+    const sym = items[_symDropIdx]?.dataset.sym;
+    if (sym) pickAlertSym(sym);
+  } else if (e.key === 'Escape') {
+    drop.style.display = 'none';
+  }
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#alertModal')) return;
+  if (!e.target.closest('[id="alertSym"]') && !e.target.closest('#alertSymDrop')) {
+    document.getElementById('alertSymDrop').style.display = 'none';
+  }
+});
 
 // ═══════════════════════════════════════════════════
 // NEWSLETTER
@@ -3635,6 +3900,8 @@ async function doLogin() {
   }
 }
 
+let _pendingConfirmEmail = '';
+
 async function doSignup() {
   const name  = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
@@ -3644,17 +3911,37 @@ async function doSignup() {
   if (!pw || pw.length < 6) { showAuthError('Password must be at least 6 characters.'); return; }
   if (_sb) {
     // ── Supabase auth ──
-    const { data, error } = await _sb.auth.signUp({ email, password: pw, options: { data: { name } } });
-    if (error) { showAuthError(error.message); return; }
-    if (data.user && !data.session) {
-      showAuthSuccess('✅ Check your email to confirm your account!'); return;
+    const { data, error } = await _sb.auth.signUp({
+      email, password: pw,
+      options: { data: { name }, emailRedirectTo: window.location.origin }
+    });
+    if (error) {
+      // Already registered → tell them to sign in
+      if (/already registered|already exists/i.test(error.message)) {
+        showAuthError('This email is already registered. Please sign in.');
+        switchLoginTab('login');
+        document.getElementById('login-email').value = email;
+      } else {
+        showAuthError(error.message);
+      }
+      return;
     }
-    loginUser({ name, email });
+    // Try immediate sign-in (succeeds if email confirmation is disabled)
+    const { data: si, error: siErr } = await _sb.auth.signInWithPassword({ email, password: pw });
+    if (!siErr && si.session) {
+      loginUser({ name, email }); return;
+    }
+    // Email confirmation required — show message + resend button
+    _pendingConfirmEmail = email;
+    const el = document.getElementById('login-success');
+    el.innerHTML = `📧 Confirmation email sent to <b>${email}</b>.<br>Check your inbox (and spam folder), then <a href="#" onclick="switchLoginTab('login');return false;" style="color:var(--accent-light)">sign in here</a>.<br><button onclick="resendConfirmation()" style="margin-top:8px;background:none;border:1px solid var(--accent);color:var(--accent-light);border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer">Resend email</button>`;
+    el.classList.add('show');
+    document.getElementById('login-error').classList.remove('show');
   } else {
     // ── localStorage fallback ──
     const users = JSON.parse(localStorage.getItem('ngxglass-users') || '[]');
     if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-      showAuthError('An account with this email already exists. Please sign in.'); return;
+      showAuthError('This email is already registered. Please sign in.'); return;
     }
     const newUser = { name, email, pw: btoa(pw), created: new Date().toISOString() };
     users.push(newUser);
@@ -3662,6 +3949,12 @@ async function doSignup() {
     showAuthSuccess('Account created! Signing you in…');
     setTimeout(() => loginUser(newUser), 900);
   }
+}
+
+async function resendConfirmation() {
+  if (!_pendingConfirmEmail || !_sb) return;
+  const { error } = await _sb.auth.resend({ type: 'signup', email: _pendingConfirmEmail, options: { emailRedirectTo: window.location.origin } });
+  showAuthSuccess(error ? `Error: ${error.message}` : `📧 Resent to ${_pendingConfirmEmail}. Check your inbox.`);
 }
 
 function demoLogin() {
@@ -3691,10 +3984,16 @@ function openUserMenu() {
   }
 }
 
-function showForgotPw() {
+async function showForgotPw() {
   const email = document.getElementById('login-email').value.trim();
-  const msg = email ? `Password reset instructions would be sent to ${email}` : 'Enter your email above, then click Forgot password again.';
-  showAuthSuccess(msg.includes('sent') ? `📧 ${msg}` : msg);
+  if (!email || !email.includes('@')) { showAuthSuccess('Enter your email address above first, then click Forgot password.'); return; }
+  if (_sb) {
+    const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+    if (error) { showAuthError(error.message); return; }
+    showAuthSuccess(`📧 Password reset email sent to ${email}. Check your inbox (and spam folder).`);
+  } else {
+    showAuthSuccess(`📧 Password reset instructions sent to ${email}`);
+  }
 }
 
 function updateNavAuth() {

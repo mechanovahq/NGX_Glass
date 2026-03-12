@@ -1,10 +1,23 @@
 [build]
   publish = "."
+  functions = "netlify/functions"
+  edge_functions = "netlify/edge-functions"
+
+# Edge function handles /api/prices — runs on Deno edge nodes (not AWS Lambda)
+[[edge_functions]]
+  function = "prices"
+  path = "/api/prices"
 
 # Serve ngx-dashboard-v1.html as the site root
 [[redirects]]
   from = "/"
   to = "/ngx-dashboard-v1.html"
+  status = 200
+
+# Keep API routes from being swallowed by the catch-all
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
 
 # Catch-all: any unknown path → dashboard
