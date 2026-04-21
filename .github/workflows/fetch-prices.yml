@@ -1,0 +1,181 @@
+name: Fetch NGX Live Prices
+
+on:
+  schedule:
+    # Every 15 minutes Mon–Fri during NGX market hours (10:00–14:30 WAT = 09:00–13:30 UTC)
+    - cron: '*/15 9-13 * * 1-5'
+    # One run at 08:55 UTC (before market open) and 14:00 UTC (after close) to capture snapshots
+    - cron: '55 8 * * 1-5'
+    - cron: '0 14 * * 1-5'
+  workflow_dispatch: # allow manual trigger from GitHub UI
+
+jobs:
+  fetch-prices:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch and parse NGX prices from afx.kwayisi.org
+        run: |
+          python3 << 'EOF'
+          import urllib.request
+          import re
+          import json
+          import os
+          from datetime import datetime, timezone, timedelta
+
+          def fetch_page(url):
+              req = urllib.request.Request(url, headers={
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                  'Accept': 'text/html,application/xhtml+xml,*/*',
+                  'Accept-Language': 'en-US,en;q=0.9',
+              })
+              with urllib.request.urlopen(req, timeout=20) as resp:
+                  return resp.read().decode('utf-8')
+
+          def strip_tags(s):
+              return re.sub(r'<[^>]+>', '', s).strip()
+
+          def parse_stocks(html):
+              results = []
+              table_start = html.find('<th>Ticker')
+              if table_start == -1:
+                  return results
+              rows = html[table_start:].split('<tr>')[1:]
+              for row in rows:
+                  cells_raw = row.split('<td>')[1:]
+                  cells = [strip_tags(c) for c in cells_raw]
+                  if len(cells) < 4:
+                      continue
+                  sym = re.sub(r'[^A-Z0-9]', '', cells[0].upper())
+                  try:
+                      price = float(cells[3].replace(',', ''))
+                  except:
+                      continue
+                  try:
+                      change = float((cells[4] if len(cells) > 4 else '0').replace(',', ''))
+                  except:
+                      change = 0.0
+                  if len(sym) >= 2 and price > 0:
+                      prev = price - change
+                      pct = round((change / prev * 100) if prev > 0 else 0, 4)
+                      results.append({'sym': sym, 'price': price, 'change': change, 'changePct': pct})
+              return results
+
+          def parse_market_summary(html):
+              """Extract ASI index value, change, turnover, shares traded from page."""
+              summary = {}
+              # ASI: look for patterns like "109,142.36" near "All-Share" or "ASI"
+              # afx.kwayisi.org shows market summary in a table before the stock listing
+              asi_match = re.search(
+                  r'All.?Share[^<]*</[^>]+>\s*<[^>]+>\s*([\d,]+\.?\d*)',
+                  html, re.IGNORECASE
+              )
+              if not asi_match:
+                  # Try alternative: large number (6+ digits) near ASI label
+                  asi_match = re.search(
+                      r'ASI[^<]{0,80}([\d]{3},[\d]{3}(?:\.[\d]+)?)',
+                      html, re.IGNORECASE
+                  )
+              if asi_match:
+                  try:
+                      summary['asi'] = float(asi_match.group(1).replace(',', ''))
+                  except:
+                      pass
+
+              # Change: look for signed number near ASI value
+              if 'asi' in summary:
+                  change_match = re.search(
+                      r'([-+]?[\d,]+\.[\d]+)\s*\(?([-+]?[\d.]+)%\)?',
+                      html[max(0, asi_match.start()-200):asi_match.start()+400]
+                  )
+                  if change_match:
+                      try:
+                          summary['asiChange'] = float(change_match.group(1).replace(',', ''))
+                          summary['asiChangePct'] = float(change_match.group(2))
+                      except:
+                          pass
+
+              # Turnover: look for "₦X.XXB" or "X,XXX,XXX,XXX" near "Turnover"
+              turn_match = re.search(
+                  r'[Tt]urnover[^<]{0,100}([\d,]+(?:\.[\d]+)?)',
+                  html
+              )
+              if turn_match:
+                  try:
+                      val = float(turn_match.group(1).replace(',', ''))
+                      if val > 1_000_000:  # raw naira value
+                          summary['turnover'] = '₦' + f'{val/1_000_000_000:.2f}' + 'B'
+                      elif val > 0:
+                          summary['turnover'] = '₦' + f'{val:.2f}' + 'B'
+                  except:
+                      pass
+
+              # Shares traded
+              shares_match = re.search(
+                  r'[Vv]olume[^<]{0,100}([\d,]+(?:\.[\d]+)?)',
+                  html
+              )
+              if shares_match:
+                  try:
+                      val = float(shares_match.group(1).replace(',', ''))
+                      if val > 1_000_000_000:
+                          summary['sharesTraded'] = f'{val/1_000_000_000:.2f}B'
+                      elif val > 1_000_000:
+                          summary['sharesTraded'] = f'{val/1_000_000:.1f}M'
+                  except:
+                      pass
+
+              return summary
+
+          try:
+              page1 = fetch_page('https://afx.kwayisi.org/ngx/')
+              page2 = fetch_page('https://afx.kwayisi.org/ngx/?page=2')
+
+              all_stocks = parse_stocks(page1) + parse_stocks(page2)
+              seen = set()
+              result = []
+              for s in all_stocks:
+                  if s['sym'] not in seen:
+                      seen.add(s['sym'])
+                      result.append(s)
+
+              if not result:
+                  print('ERROR: Parsed 0 stocks — aborting')
+                  exit(1)
+
+              market_summary = parse_market_summary(page1)
+              print(f'Market summary extracted: {market_summary}')
+
+              wat = datetime.now(timezone(timedelta(hours=1)))
+              output = {
+                  'result': result,
+                  'updated': wat.strftime('%Y-%m-%dT%H:%M:%S+01:00'),
+                  'count': len(result),
+              }
+              # Add market summary fields if parsed successfully
+              output.update(market_summary)
+
+              os.makedirs('data', exist_ok=True)
+              with open('data/prices.json', 'w') as f:
+                  json.dump(output, f, separators=(',', ':'))
+              print(f'Saved {len(result)} stocks')
+          except Exception as e:
+              print(f'FETCH ERROR: {e}')
+              exit(1)
+          EOF
+
+      - name: Commit updated prices
+        run: |
+          git config user.name "NGXGlass Bot"
+          git config user.email "ngxglass@gmail.com"
+          git add data/prices.json
+          if git diff --staged --quiet; then
+            echo "No price changes — skipping commit"
+          else
+            git commit -m "chore: update live prices [skip ci]"
+            git push
+          fi
