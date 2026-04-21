@@ -15,6 +15,11 @@ interface PricesResponse {
   result: PriceUpdate[];
   updated: string;
   count: number;
+  asi?: number;
+  asiChange?: number;
+  asiChangePct?: number;
+  turnover?: string;
+  sharesTraded?: string;
 }
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
@@ -36,6 +41,17 @@ export function useLivePrices() {
           day: u.changePct,
           up: u.changePct >= 0,
         })),
+      });
+      dispatch({
+        type: 'UPDATE_MARKET_STATS',
+        payload: {
+          asi: data.asi ?? null,
+          asiChange: data.asiChange ?? null,
+          asiChangePct: data.asiChangePct ?? null,
+          turnover: data.turnover ?? null,
+          sharesTraded: data.sharesTraded ?? null,
+          updated: data.updated ?? null,
+        },
       });
     },
   });

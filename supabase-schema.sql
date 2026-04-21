@@ -72,17 +72,22 @@ alter table public.price_alerts       enable row level security;
 alter table public.watchlist          enable row level security;
 
 -- Profiles: users can only read/update their own
+drop policy if exists "Users can view own profile"   on public.profiles;
+drop policy if exists "Users can update own profile" on public.profiles;
 create policy "Users can view own profile"   on public.profiles for select using (auth.uid() = id);
 create policy "Users can update own profile" on public.profiles for update using (auth.uid() = id);
 
 -- Holdings: full CRUD for own rows
+drop policy if exists "Holdings: own rows only" on public.portfolio_holdings;
 create policy "Holdings: own rows only" on public.portfolio_holdings
   using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- Alerts: full CRUD for own rows
+drop policy if exists "Alerts: own rows only" on public.price_alerts;
 create policy "Alerts: own rows only" on public.price_alerts
   using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- Watchlist: full CRUD for own rows
+drop policy if exists "Watchlist: own rows only" on public.watchlist;
 create policy "Watchlist: own rows only" on public.watchlist
   using (auth.uid() = user_id) with check (auth.uid() = user_id);

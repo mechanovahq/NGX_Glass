@@ -22,9 +22,9 @@ export async function GET() {
     // fall through to local fallback
   }
 
-  // Fallback: read local data/prices.json (works in dev + when upstream is stale)
+  // Fallback: read bundled data/prices.json
   try {
-    const localPath = path.join(process.cwd(), '..', 'data', 'prices.json');
+    const localPath = path.join(process.cwd(), 'data', 'prices.json');
     const raw = await readFile(localPath, 'utf-8');
     const data = JSON.parse(raw);
     return NextResponse.json(data, {

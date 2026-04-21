@@ -12,8 +12,8 @@ import { FULL_NEWS } from '@/lib/data/news';
 import { FULL_FILINGS } from '@/lib/data/filings';
 
 const INDICES = [
-  { n: 'NGX All-Share',  sub: 'Benchmark',   v: '192,826.78', d: '-0.38%', ytd: '+23.91%', up: false },
-  { n: 'NGX 30',        sub: 'Large Cap',    v: '3,847.21',   d: '-0.45%', ytd: '+22.84%', up: false },
+  { n: 'NGX All-Share',  sub: 'Benchmark',   v: '110,841',    d: '+0.47%', ytd: '+7.36%',  up: true  },
+  { n: 'NGX 30',        sub: 'Large Cap',    v: '4,012.8',    d: '+0.31%', ytd: '+8.12%',  up: true  },
   { n: 'NGX Banking',   sub: 'Financials',   v: '1,024.40',   d: '+0.79%', ytd: '+24.82%', up: true  },
   { n: 'NGX Consumer',  sub: 'FMCG',         v: '1,847.30',   d: '+0.28%', ytd: '+9.93%',  up: true  },
   { n: 'NGX Industrial',sub: 'Cement/Mfg',   v: '4,312.60',   d: '+2.21%', ytd: '+28.4%',  up: true  },
@@ -22,8 +22,19 @@ const INDICES = [
   { n: 'NGX Pension',   sub: 'Pension Funds',v: '2,190.40',   d: '+0.15%', ytd: '+32.11%', up: true  },
 ];
 
+function formatUpdated(iso: string | null): string {
+  if (!iso) return 'Apr 17, 2026';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Africa/Lagos' });
+}
+
+function formatCapV(billionsNGN: number): string {
+  if (billionsNGN >= 1000) return '₦' + (billionsNGN / 1000).toFixed(2) + 'T';
+  return '₦' + billionsNGN.toFixed(1) + 'B';
+}
+
 export default function MarketView() {
-  const { stocks } = useStocks();
+  const { stocks, marketStats } = useStocks();
 
   const { adv, dec, unc, topGainer } = useMemo(() => {
     const adv = stocks.filter(s => s.day > 0).length;
@@ -36,6 +47,19 @@ export default function MarketView() {
   const gainers = useMemo(() => [...stocks].filter(s => s.day > 0).sort((a, b) => b.day - a.day).slice(0, 5), [stocks]);
   const losers  = useMemo(() => [...stocks].filter(s => s.day < 0).sort((a, b) => a.day - b.day).slice(0, 5), [stocks]);
 
+  const totalCapStr = useMemo(() => {
+    const total = stocks.reduce((s, x) => s + x.capV, 0);
+    return formatCapV(total);
+  }, [stocks]);
+
+  const liveAsi = marketStats.asi ?? 110841;
+  const liveAsiChange = marketStats.asiChange ?? 521;
+  const liveAsiChangePct = marketStats.asiChangePct ?? 0.47;
+  const liveTurnover = marketStats.turnover ?? '₦38.92B';
+  const liveShares = marketStats.sharesTraded ?? '1.04B';
+  const dateLabel = formatUpdated(marketStats.updated);
+  const asiUp = liveAsiChangePct >= 0;
+
   return (
     <div id="market-view">
 
@@ -47,7 +71,7 @@ export default function MarketView() {
             NGX Market Overview
           </div>
           <div className="page-meta">
-            Mar 10, 2026 close &nbsp;·&nbsp; 956.2M shares &nbsp;·&nbsp; ₦34.71B turnover &nbsp;·&nbsp;
+            {dateLabel} &nbsp;·&nbsp; {liveShares} shares &nbsp;·&nbsp; {liveTurnover} turnover &nbsp;·&nbsp;
             <span style={{ color: 'var(--pos)' }}>{adv} advancing</span>
             &nbsp;·&nbsp;
             <span style={{ color: 'var(--neg)' }}>{dec} declining</span>
@@ -56,8 +80,10 @@ export default function MarketView() {
         <div className="header-right">
           <div className="asi-badge">
             <span className="label">ASI</span>
-            <span className="asi-val">109,142</span>
-            <span className="asi-chg up">▲ 674 (+0.62%)</span>
+            <span className="asi-val">{liveAsi.toLocaleString()}</span>
+            <span className={`asi-chg ${asiUp ? 'up' : 'dn'}`}>
+              {asiUp ? '▲' : '▼'} {Math.abs(liveAsiChange).toLocaleString()} ({asiUp ? '+' : ''}{liveAsiChangePct.toFixed(2)}%)
+            </span>
           </div>
         </div>
       </div>
@@ -76,12 +102,12 @@ export default function MarketView() {
       {/* Stat Grid */}
       <div className="stat-grid">
         {[
-          { l: 'Total Mkt Cap',  v: '₦62.82T',               sub: '~$39.2B',          d: '+0.38%', up: true  },
-          { l: '24h Turnover',   v: '₦34.71B',               sub: '81,429 deals',      d: '-1.01%', up: false },
-          { l: 'Shares Traded',  v: '823.8M',                 sub: '156 equities',      d: '-4.2%',  up: false },
-          { l: 'NGX ASI',        v: '192,826',                sub: 'YTD +5.91%',        d: '-0.38%', up: false },
-          { l: 'NGX 30',         v: '3,891.4',                sub: 'Large caps',        d: '-0.12%', up: false },
-          { l: 'Market Breadth', v: `${adv}↑ ${dec}↓`,       sub: `${unc} unchanged`,  d: '',       up: adv > dec },
+          { l: 'Total Mkt Cap',  v: totalCapStr,                                sub: '~$' + (parseFloat(totalCapStr.replace(/[₦TB]/g,'')) * (totalCapStr.includes('T') ? 1000 : 1) / 1600).toFixed(1) + 'B', d: `+${liveAsiChangePct.toFixed(2)}%`, up: asiUp },
+          { l: '24h Turnover',   v: liveTurnover.startsWith('₦') ? liveTurnover : '₦' + liveTurnover, sub: `${adv + dec + unc} equities`, d: '', up: true },
+          { l: 'Shares Traded',  v: liveShares,                                 sub: '156 equities',      d: '',       up: true  },
+          { l: 'NGX ASI',        v: liveAsi.toLocaleString(),                   sub: 'YTD +7.36%',        d: `${asiUp ? '+' : ''}${liveAsiChangePct.toFixed(2)}%`, up: asiUp },
+          { l: 'NGX 30',         v: '4,012.8',                                  sub: 'Large caps',        d: '+0.31%', up: true  },
+          { l: 'Market Breadth', v: `${adv}↑ ${dec}↓`,                         sub: `${unc} unchanged`,  d: '',       up: adv > dec },
           { l: 'Top Gainer',     v: `+${topGainer?.day.toFixed(2) ?? '0.00'}%`, sub: `${topGainer?.sym ?? ''} ₦${topGainer?.price ?? ''}`, d: '', up: true },
         ].map((s, i) => (
           <div key={i} className="stat-card">
@@ -120,7 +146,7 @@ export default function MarketView() {
           <div className="panel">
             <div className="panel-header">
               <div className="panel-title">Top Movers</div>
-              <span className="panel-tag">Week ended Mar 07, 2026</span>
+              <span className="panel-tag">{dateLabel}</span>
             </div>
             <div className="movers-grid">
               <div className="movers-col">
@@ -213,7 +239,7 @@ export default function MarketView() {
           <div className="panel">
             <div className="panel-header">
               <div className="panel-title">NGX Indices</div>
-              <span className="panel-tag">Mar 10, 2026</span>
+              <span className="panel-tag">{dateLabel}</span>
             </div>
             {INDICES.map(idx => (
               <div key={idx.n} className="index-row">

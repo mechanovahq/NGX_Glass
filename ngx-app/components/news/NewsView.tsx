@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { FULL_NEWS } from '@/lib/data/news';
+import { useStocks } from '@/context/StocksContext';
 
 const TAGS = [
   { label: 'All', value: 'all' },
@@ -14,6 +15,7 @@ const TAGS = [
 ];
 
 export default function NewsView() {
+  const { marketStats } = useStocks();
   const [tag, setTag] = useState('all');
 
   const filtered = useMemo(() =>
@@ -94,7 +96,17 @@ export default function NewsView() {
           <div className="panel">
             <div className="panel-header"><div className="panel-title">Market Summary</div></div>
             <p style={{ fontSize: 12, lineHeight: 1.6, color: 'var(--muted-2)' }}>
-              The NGX All-Share Index closed at 109,142 on March 10, 2026 — up 0.62% (+674 points). Banking stocks led the rally while consumer goods faced mild selling pressure. Total turnover was ₦34.71B across 81,429 deals.
+              {(() => {
+                const asi = marketStats.asi ?? 110841;
+                const pct = marketStats.asiChangePct ?? 0.47;
+                const chg = marketStats.asiChange ?? 521;
+                const up = pct >= 0;
+                const date = marketStats.updated
+                  ? new Date(marketStats.updated).toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Lagos' })
+                  : 'April 17, 2026';
+                const turn = marketStats.turnover ?? '₦38.92B';
+                return `The NGX All-Share Index closed at ${asi.toLocaleString()} on ${date} — ${up ? 'up' : 'down'} ${Math.abs(pct).toFixed(2)}% (${up ? '+' : ''}${Math.abs(chg).toLocaleString()} points). Telecoms and banking stocks led the session while oil & gas saw mild profit-taking. Total turnover was ${turn.startsWith('₦') ? turn : '₦' + turn}.`;
+              })()}
             </p>
           </div>
         </div>

@@ -67,7 +67,7 @@ function parseDateMs(dateStr: string): number {
 }
 
 function relativeTime(dateStr: string): string {
-  const now = new Date('2026-03-15').getTime();
+  const now = new Date('2026-04-21').getTime();
   const days = Math.floor((now - parseDateMs(dateStr)) / 86_400_000);
   if (days === 0) return 'Today';
   if (days === 1) return '1 day ago';
@@ -90,7 +90,7 @@ export default function DisclosuresView() {
   }), []);
 
   const filings = useMemo(() => {
-    const now = new Date('2026-03-15').getTime();
+    const now = new Date('2026-04-21').getTime();
     let data = FULL_FILINGS;
     if (category !== 'all') data = data.filter(f => f.type === category);
     if (timeDays !== Infinity) {

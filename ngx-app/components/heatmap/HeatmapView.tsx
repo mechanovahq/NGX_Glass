@@ -13,7 +13,7 @@ const SECTOR_MAP: Record<string, string> = {
 };
 
 export default function HeatmapView() {
-  const { stocks } = useStocks();
+  const { stocks, marketStats } = useStocks();
   const [bubbleFilter, setBubbleFilter] = useState('all');
 
   const filteredForBubble = useMemo(() => {
@@ -41,7 +41,11 @@ export default function HeatmapView() {
       <div className="page-header">
         <div>
           <div className="page-title">NGX Sector Heatmap</div>
-          <div className="page-meta">Sector performance for week ended Mar 07, 2026</div>
+          <div className="page-meta">
+            {marketStats.updated
+              ? `As of ${new Date(marketStats.updated).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Africa/Lagos' })}`
+              : 'Sector performance — Apr 2026'}
+          </div>
         </div>
       </div>
 

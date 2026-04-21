@@ -19,8 +19,18 @@ export interface Stock {
   up: boolean;
 }
 
+export interface MarketStats {
+  asi: number | null;
+  asiChange: number | null;
+  asiChangePct: number | null;
+  turnover: string | null;
+  sharesTraded: string | null;
+  updated: string | null;
+}
+
 export type StocksAction =
   | { type: 'UPDATE_PRICES'; payload: { sym: string; price: number; day: number; up: boolean }[] }
+  | { type: 'UPDATE_MARKET_STATS'; payload: MarketStats }
   | { type: 'RESET' };
 
 export interface BubbleState {

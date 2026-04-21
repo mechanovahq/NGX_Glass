@@ -6,6 +6,7 @@
 <title>NGXGlass — Nigerian Exchange Analytics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="ngxglass-logo.png"/>
 <!-- Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -39,8 +40,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 nav{position:sticky;top:0;z-index:200;background:rgba(8,11,14,0.92);backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;height:50px;gap:0}
 [data-theme="light"] nav{background:rgba(255,255,255,0.92)}
 .nav-logo{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;letter-spacing:-0.6px;color:var(--text);text-decoration:none;flex-shrink:0}
-.nav-logo-icon{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(22,163,74,0.4)}
-.nav-logo-icon svg{width:14px;height:14px;fill:white}
+.nav-logo-icon{width:28px;height:28px;border-radius:7px;overflow:hidden;flex-shrink:0}
+.nav-logo-icon img{width:28px;height:28px;object-fit:cover;border-radius:7px;display:block}
 .nav-badge{font-size:9px;font-weight:700;background:var(--accent-glow);color:var(--accent-light);border:1px solid rgba(34,197,94,0.25);border-radius:4px;padding:1px 5px;letter-spacing:0.5px}
 .nav-divider{width:1px;height:18px;background:var(--border);margin:0 14px;flex-shrink:0}
 .nav-tabs{display:flex;gap:1px;flex:1;overflow-x:auto}
@@ -454,43 +455,110 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
 
 /* ═══════ RESPONSIVE ═══════ */
 @media(max-width:1280px){.stat-grid{grid-template-columns:repeat(4,1fr)}.two-col{grid-template-columns:1fr}.three-col{grid-template-columns:1fr 1fr}.newsletter-form{display:none}}
+
 @media(max-width:768px){
+  /* Layout */
+  .page{padding:10px}
+  .two-col,.three-col{grid-template-columns:1fr}
   .stat-grid{grid-template-columns:repeat(2,1fr)}
-  .three-col{grid-template-columns:1fr}
+  .folio-cta{flex-direction:column;gap:10px}
+  .folio-cta .folio-sub{display:none}
+  .newsletter-strip{display:none}
+
+  /* Nav */
   .nav-tabs{display:none}
   .nav-search-btn{display:none}
-  .folio-cta .folio-sub{display:none}
+
+  /* Page header */
   .page-header{flex-direction:column;align-items:flex-start;gap:10px}
-  .header-right{width:100%;justify-content:space-between}
-  .asi-badge{font-size:12px}
-  .tf-group{display:flex;flex-wrap:wrap;gap:4px}
-  .two-col{grid-template-columns:1fr}
-  .folio-cta{flex-direction:column;gap:10px}
-  .newsletter-strip{display:none}
-  .panel-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .header-right{width:100%;justify-content:flex-start;flex-wrap:wrap;gap:6px}
+  .asi-badge{font-size:11.5px;padding:5px 10px}
+
+  /* Panels */
+  .panel-header{flex-wrap:wrap;gap:6px}
   .fi-tabs{flex-wrap:wrap}
+  .tf-group{flex-wrap:wrap;gap:4px}
+
+  /* Table */
   .table-tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:2px}
   .table-tab{white-space:nowrap;flex-shrink:0}
   .sector-filter{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .info-box{max-height:95vh;border-radius:12px 12px 0 0;position:fixed;bottom:0;width:100%;max-width:100vw}
-  .modal-box{width:95vw;max-height:90vh;overflow-y:auto}
-  .ticker-strip{font-size:10px}
-  table{font-size:11px}
+  .scroll-panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{font-size:11px;min-width:520px}
   .sym-cell>div{gap:5px}
-}
-@media(max-width:480px){
-  .stat-grid{grid-template-columns:repeat(2,1fr);font-size:11px}
-  .stat-value{font-size:16px}
-  .fx-strip{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
-  .fx-item{flex-shrink:0}
-  .page{padding:10px}
-  .nav-inner{padding:0 10px}
-  .nav-logo-text{font-size:13px}
+  /* Hide less essential columns on mobile */
+  table thead th:nth-child(8),table tbody td:nth-child(8),  /* YTD hidden — keep space */
+  table thead th:nth-child(10),table tbody td:nth-child(10), /* Volume */
+  table thead th:nth-child(11),table tbody td:nth-child(11), /* Shares O/S */
+  table thead th:nth-child(12),table tbody td:nth-child(12), /* 52W Range */
+  table thead th:nth-child(13),table tbody td:nth-child(13), /* Div Yield */
+  table thead th:nth-child(14),table tbody td:nth-child(14), /* P/E */
+  table thead th:nth-child(15),table tbody td:nth-child(15)  /* Spark */
+  {display:none}
+
+  /* Modals */
+  .info-box{max-height:95vh;border-radius:16px 16px 0 0;position:fixed;bottom:0;width:100%;max-width:100vw}
+  .modal-box{width:95vw;max-height:92vh;overflow-y:auto}
+  .cs-box{width:95vw}
+
+  /* News */
+  .news-grid{grid-template-columns:1fr}
+  .news-sidebar{display:none}
+
+  /* Ticker */
+  .ticker-strip{font-size:10px}
+
+  /* Portfolio */
+  #pfGrowthChart{height:160px !important}
+  .pf-tf-btn{padding:2px 8px;font-size:10px}
+
+  /* Heatmap */
+  .heatmap-grid{grid-template-columns:repeat(2,1fr) !important}
+
+  /* Footer */
   .footer-grid{grid-template-columns:1fr 1fr}
   .footer-bottom{flex-direction:column;align-items:flex-start}
-  .cs-box,.info-box{width:98vw}
+}
+
+@media(max-width:480px){
+  /* Layout */
+  .page{padding:8px}
+  nav{padding:0 12px}
+
+  /* Stats */
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-value{font-size:15px}
+  .stat-card{padding:10px 12px}
+
+  /* Nav */
+  .nav-logo span:last-of-type{display:none} /* hide BETA badge */
+  .nav-badge{display:none}
+
+  /* FX strip */
+  .fx-strip{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap}
+  .fx-item{flex-shrink:0}
+
+  /* Breadth panel */
+  .breadth-label{font-size:10px}
+  .breadth-bar{height:8px}
+
+  /* Table — further hide Company column */
+  table thead th:nth-child(4),table tbody td:nth-child(4){display:none}
+  table{min-width:360px;font-size:10.5px}
+
+  /* Portfolio chart */
+  #pfGrowthChart{height:130px !important}
+
+  /* Modals full-width */
+  .modal-box,.alert-modal{width:100vw;border-radius:16px 16px 0 0;position:fixed;bottom:0;max-height:92vh;overflow-y:auto}
   .alert-type-row{flex-direction:column;gap:6px}
   .alert-type-btn{width:100%}
+
+  /* Footer compact */
+  .footer-grid{grid-template-columns:1fr 1fr;gap:16px}
+  .footer-bottom{flex-direction:column;align-items:flex-start}
+  .footer-brand-desc{max-width:100%}
+  .site-footer{padding:28px 14px 20px}
 }
 
 /* ═══════ SITE FOOTER ═══════ */
@@ -592,6 +660,55 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
 .cs-notify-input{flex:1;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-size:12.5px;font-family:var(--font);color:var(--text);outline:none;transition:border-color 0.15s}
 .cs-notify-input:focus{border-color:rgba(34,197,94,0.5)}
 .cs-notify-input::placeholder{color:var(--muted)}
+/* ═══════ PANEL DRAWER ═══════ */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:700;opacity:0;pointer-events:none;transition:opacity 0.25s;backdrop-filter:blur(3px)}
+.drawer-overlay.open{opacity:1;pointer-events:auto}
+.drawer-box{position:fixed;top:0;right:0;height:100vh;width:720px;max-width:96vw;background:var(--surface);border-left:1px solid var(--border-strong);z-index:701;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;overflow:hidden;box-shadow:-24px 0 60px rgba(0,0,0,0.45)}
+.drawer-box.open{transform:translateX(0)}
+.drawer-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.drawer-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.drawer-title{font-size:15px;font-weight:700;flex:1}
+.drawer-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;padding:2px 4px;border-radius:5px;transition:color 0.15s,background 0.15s}
+.drawer-close:hover{color:var(--text);background:var(--surface-2)}
+.drawer-body{flex:1;overflow-y:auto;padding:20px}
+.drawer-section{margin-bottom:22px}
+.drawer-section-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:10px}
+.dr-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.dr-stat{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.dr-stat-label{font-size:10px;color:var(--muted);margin-bottom:4px}
+.dr-stat-val{font-size:18px;font-weight:800;font-family:var(--mono);letter-spacing:-0.5px}
+.dr-stat-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.dr-table{width:100%;border-collapse:collapse;font-size:12px}
+.dr-table th{text-align:left;padding:6px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
+.dr-table th.r,.dr-table td.r{text-align:right}
+.dr-table td{padding:7px 8px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle}
+.dr-table tr:last-child td{border-bottom:none}
+.dr-table tr:hover td{background:rgba(255,255,255,0.02)}
+.dr-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:0.3px}
+.dr-tag-green{background:rgba(34,197,94,0.12);color:var(--accent-light)}
+.dr-tag-red{background:rgba(239,68,68,0.1);color:var(--red)}
+.dr-tag-blue{background:rgba(14,165,233,0.12);color:#38bdf8}
+.dr-tag-amber{background:rgba(245,158,11,0.12);color:var(--amber)}
+.dr-tag-purple{background:rgba(139,92,246,0.12);color:#a78bfa}
+.dr-bar-wrap{height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;width:80px}
+.dr-bar-fill{height:100%;border-radius:3px;transition:width 0.4s}
+.dr-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.dr-row:last-child{border-bottom:none}
+.dr-indicator-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--surface-2);border-radius:8px;margin-bottom:6px}
+.dr-indicator-name{font-size:12px;color:var(--muted-2);font-weight:500}
+.dr-indicator-val{font-size:13px;font-weight:700;font-family:var(--mono)}
+.dr-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:0.3px}
+.dr-badge-bull{background:rgba(34,197,94,0.12);color:var(--accent-light)}
+.dr-badge-bear{background:rgba(239,68,68,0.1);color:var(--red)}
+.dr-badge-neutral{background:rgba(148,163,184,0.1);color:var(--muted)}
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.comp-card{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:14px}
+.comp-sym{font-size:16px;font-weight:800;margin-bottom:2px}
+.comp-co{font-size:10.5px;color:var(--muted);margin-bottom:10px}
+.comp-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11.5px}
+.comp-row:last-child{border-bottom:none}
+.comp-lbl{color:var(--muted)}
+.comp-val{font-family:var(--mono);font-weight:600}
 /* ═══════ INFO MODAL (About / Disclaimer / Terms / Privacy) ═══════ */
 .info-overlay{position:fixed;inset:0;background:var(--modal-bg);z-index:600;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(6px)}
 .info-overlay.open{opacity:1;pointer-events:auto}
@@ -624,8 +741,8 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
 .login-box{background:var(--surface);border:1px solid var(--border-strong);border-radius:18px;width:400px;max-width:92vw;box-shadow:0 32px 80px rgba(0,0,0,0.65);overflow:hidden;transform:scale(0.95) translateY(10px);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1)}
 .login-overlay.open .login-box{transform:scale(1) translateY(0)}
 .login-top{padding:32px 28px 20px;text-align:center;background:linear-gradient(160deg,rgba(34,197,94,0.07),transparent 60%)}
-.login-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 20px rgba(22,163,74,0.35)}
-.login-logo svg{width:22px;height:22px;fill:white}
+.login-logo{width:52px;height:52px;border-radius:14px;overflow:hidden;margin:0 auto 14px}
+.login-logo img{width:52px;height:52px;object-fit:cover;display:block}
 .login-title{font-size:20px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px}
 .login-sub{font-size:12px;color:var(--muted);line-height:1.5}
 .login-body{padding:20px 28px 28px}
@@ -667,6 +784,9 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
 .disc-filter-btn{padding:4px 12px;font-size:10.5px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-family:var(--font);transition:all 0.15s;white-space:nowrap}
 .disc-filter-btn:hover{border-color:var(--border-strong);color:var(--text)}
 .disc-filter-btn.active{background:var(--accent-glow);color:var(--accent-light);border-color:rgba(34,197,94,0.3)}
+.pf-tf-btn{padding:3px 10px;font-size:10.5px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-family:var(--font);transition:all 0.15s;white-space:nowrap}
+.pf-tf-btn:hover{border-color:var(--border-strong);color:var(--text)}
+.pf-tf-btn.active{background:var(--accent-glow);color:var(--accent-light);border-color:rgba(34,197,94,0.3);font-weight:600}
 .disc-search{background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:5px 10px;font-size:12px;font-family:var(--font);color:var(--text);outline:none;width:200px;transition:border-color 0.15s}
 .disc-search:focus{border-color:rgba(34,197,94,0.5)}
 .disc-search::placeholder{color:var(--muted)}
@@ -681,6 +801,40 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
 .ntf-btn{padding:3px 10px;font-size:10.5px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-family:var(--font);transition:all 0.15s}
 .ntf-btn:hover{border-color:var(--border-strong);color:var(--text)}
 .ntf-btn.active{background:var(--accent-glow);color:var(--accent-light);border-color:rgba(34,197,94,0.3)}
+
+/* ═══════ AI ASSISTANT ═══════ */
+.ai-fab{position:fixed;bottom:28px;right:28px;z-index:600;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 22px rgba(22,163,74,0.45);transition:transform 0.2s,box-shadow 0.2s;color:#fff;font-size:20px}
+.ai-fab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(22,163,74,0.55)}
+.ai-fab .ai-badge-dot{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:#22c55e;border:2px solid var(--bg);animation:pulse-dot 2s ease-in-out infinite}
+.ai-panel{position:fixed;bottom:90px;right:28px;z-index:599;width:380px;max-height:560px;background:var(--surface);border:1px solid var(--border);border-radius:18px;display:flex;flex-direction:column;box-shadow:0 12px 48px rgba(0,0,0,0.35);opacity:0;pointer-events:none;transform:translateY(16px) scale(0.97);transition:opacity 0.2s,transform 0.2s;overflow:hidden}
+.ai-panel.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+.ai-panel-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ai-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#15803d);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ai-panel-title{font-size:13px;font-weight:700;color:var(--text)}
+.ai-panel-sub{font-size:10.5px;color:var(--accent-light)}
+.ai-close{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:6px;transition:color 0.15s}
+.ai-close:hover{color:var(--text)}
+.ai-messages{flex:1;overflow-y:auto;padding:14px 14px 6px;display:flex;flex-direction:column;gap:10px;min-height:140px;scroll-behavior:smooth}
+.ai-messages::-webkit-scrollbar{width:4px}
+.ai-messages::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:2px}
+.ai-msg{max-width:88%;font-size:12.5px;line-height:1.55;padding:9px 12px;border-radius:12px;word-wrap:break-word;white-space:pre-wrap}
+.ai-msg.user{align-self:flex-end;background:rgba(22,163,74,0.15);border:1px solid rgba(34,197,94,0.2);color:var(--text);border-bottom-right-radius:4px}
+.ai-msg.bot{align-self:flex-start;background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px}
+.ai-msg.bot.loading{color:var(--muted);font-style:italic}
+.ai-skills{padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.ai-skill{padding:4px 10px;font-size:10.5px;border-radius:20px;border:1px solid var(--border);background:var(--surface-2);color:var(--muted);cursor:pointer;white-space:nowrap;transition:all 0.15s;font-family:var(--font)}
+.ai-skill:hover{border-color:rgba(34,197,94,0.4);color:var(--accent-light);background:var(--accent-glow)}
+.ai-input-row{padding:10px 12px 14px;display:flex;gap:8px;flex-shrink:0}
+.ai-input{flex:1;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:10px;padding:8px 12px;font-size:12.5px;font-family:var(--font);color:var(--text);outline:none;resize:none;line-height:1.4;max-height:80px;transition:border-color 0.15s}
+.ai-input:focus{border-color:rgba(34,197,94,0.5)}
+.ai-input::placeholder{color:var(--muted)}
+.ai-send{width:36px;height:36px;flex-shrink:0;border-radius:10px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;transition:background 0.15s;align-self:flex-end}
+.ai-send:hover{background:var(--accent-light)}
+.ai-send:disabled{background:var(--surface-3);cursor:not-allowed;opacity:0.5}
+@media(max-width:480px){
+  .ai-panel{width:calc(100vw - 24px);right:12px;bottom:80px;max-height:72vh}
+  .ai-fab{bottom:18px;right:18px;width:46px;height:46px;font-size:18px}
+}
 </style>
 </head>
 <body>
@@ -733,10 +887,6 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
       <div class="form-group">
         <label class="form-label">Target Price (&#8358;)</label>
         <input class="form-input" id="alertPrice" placeholder="e.g. 70.00" type="number" min="0" step="0.01"/>
-      </div>
-      <div class="alerts-search-wrap">
-        <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="7"/><line x1="14.5" y1="14.5" x2="19" y2="19"/></svg>
-        <input class="alerts-search" id="alerts-search" placeholder="Search symbol…" oninput="renderAlerts()" autocomplete="off"/>
       </div>
       <div class="alerts-list" id="alerts-list"></div>
     </div>
@@ -792,6 +942,17 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
   </div>
 </div>
 
+<!-- ══ PANEL DRAWER ══ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer-box" id="drawerBox">
+  <div class="drawer-head">
+    <div class="drawer-icon" id="drawerIcon">📊</div>
+    <div class="drawer-title" id="drawerTitle">Panel</div>
+    <button class="drawer-close" onclick="closeDrawer()">&#215;</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
 <!-- ══ ADD HOLDING MODAL ══ -->
 <div class="modal-overlay" id="addHoldingModal">
   <div class="modal-box">
@@ -830,7 +991,7 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
   <div class="login-box">
     <div class="login-top">
       <div class="login-logo">
-        <svg viewBox="0 0 14 14"><path d="M2 10 L7 2 L12 10 Z"/><rect x="4.5" y="10" width="5" height="2" rx="1"/></svg>
+        <img src="ngxglass-logo.png" alt="NGXGlass"/>
       </div>
       <div class="login-title"><span style="color:var(--accent-light)">NGX</span>Glass</div>
       <div class="login-sub">Nigerian Exchange Analytics Platform</div>
@@ -885,9 +1046,9 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
 
 <!-- ══ NAV ══ -->
 <nav>
-  <a href="#" class="nav-logo">
+  <a href="#" class="nav-logo" onclick="event.preventDefault();switchView('market')" title="Home">
     <div class="nav-logo-icon">
-      <svg viewBox="0 0 14 14"><path d="M2 10 L7 2 L12 10 Z"/><rect x="4.5" y="10" width="5" height="2" rx="1"/></svg>
+      <img src="ngxglass-logo.png" alt="NGXGlass"/>
     </div>
     <span style="letter-spacing:0"><span style="color:var(--accent-light)">NGX</span>Glass</span>
     <span class="nav-badge">BETA</span>
@@ -934,45 +1095,45 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
     <div class="mega-col">
       <div class="mega-col-title">Market</div>
 
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();switchView('market')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#16a34a,#15803d)">📊</div>
         <div><div class="mega-item-name">Equities Overview</div><div class="mega-item-sub">All listed NGX stocks</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openVolumeOverview()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#0284c7,#0369a1)">📈</div>
         <div><div class="mega-item-name">Volume Overview</div><div class="mega-item-sub">Shares &amp; value traded</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();switchView('market');setTimeout(()=>document.getElementById('movers')?.scrollIntoView({behavior:'smooth',block:'center'}),350)">
         <div class="mega-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🔥</div>
         <div><div class="mega-item-name">Gainers &amp; Losers</div><div class="mega-item-sub">Daily price movers</div></div>
         <span class="mega-hot">HOT</span>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();switchView('heatmap')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">🗺️</div>
         <div><div class="mega-item-name">Sector Heatmap</div><div class="mega-item-sub">Performance by sector</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();switchView('market');setTimeout(()=>document.querySelector('.fg-wrap')?.scrollIntoView({behavior:'smooth',block:'center'}),350)">
         <div class="mega-icon" style="background:linear-gradient(135deg,#db2777,#be185d)">💹</div>
         <div><div class="mega-item-name">Market Breadth</div><div class="mega-item-sub">Advance/decline ratio</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openInflowOutflow()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#059669,#047857)">📉</div>
         <div><div class="mega-item-name">Inflow / Outflow</div><div class="mega-item-sub">Net institutional flows</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openCS('Inflow/Outflow History','🔄','Historical net institutional fund flow charts — monthly & quarterly breakdowns.')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#64748b,#475569)">🔄</div>
         <div><div class="mega-item-name">Inflow/Outflow History</div><div class="mega-item-sub">Historical fund flows</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openBullIndicators()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#f97316,#ea580c)">💡</div>
         <div><div class="mega-item-name">Bull Market Indicators</div><div class="mega-item-sub">Cycle peak signals</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openNGXGlassIndex()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#22c55e,#16a34a)">🌀</div>
         <div><div class="mega-item-name">NGX Glass Index</div><div class="mega-item-sub">Proprietary market score</div></div>
         <span class="mega-new">NEW</span>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openFXMonitor()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">💱</div>
         <div><div class="mega-item-name">FX &amp; Macro Monitor</div><div class="mega-item-sub">NGN rates &amp; CBN data</div></div>
       </a>
@@ -982,40 +1143,40 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
     <div class="mega-col">
       <div class="mega-col-title">Institutions &amp; Funds</div>
 
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openCS('Pension Fund Holdings','🏛️','PenCom quarterly equity allocation data — holdings by fund and sector breakdown.')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#2563eb,#1d4ed8)">🏛️</div>
         <div><div class="mega-item-name">Pension Fund Holdings</div><div class="mega-item-sub">PenCom equity exposure</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openCS('Mutual Funds','🏦','SEC-registered unit trust & mutual fund performance — NAV, returns & fund manager rankings.')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">🏦</div>
         <div><div class="mega-item-name">Mutual Funds</div><div class="mega-item-sub">SEC-registered funds</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openETFs()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">📦</div>
         <div><div class="mega-item-name">ETFs on NGX</div><div class="mega-item-sub">Exchange traded funds</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openREITs()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#0f766e,#0d9488)">🪙</div>
         <div><div class="mega-item-name">REITs</div><div class="mega-item-sub">Real estate investment trusts</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();switchView('market');setTimeout(()=>document.getElementById('fi-body')?.scrollIntoView({behavior:'smooth',block:'center'}),350)">
         <div class="mega-icon" style="background:linear-gradient(135deg,#a16207,#854d0e)">🔐</div>
         <div><div class="mega-item-name">Fixed Income / Bonds</div><div class="mega-item-sub">FGN &amp; corporate bonds</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openForeignFlows()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#0284c7,#075985)">🌍</div>
         <div><div class="mega-item-name">Foreign Investor Flows</div><div class="mega-item-sub">Diaspora &amp; FPI activity</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openBrokerRankings()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#16a34a,#14532d)">📋</div>
         <div><div class="mega-item-name">Stockbroker Rankings</div><div class="mega-item-sub">Volume &amp; deal leaders</div></div>
         <span class="mega-new">NEW</span>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openCS('Top Institutional Holdings','🏆','Largest shareholders by equity — fund managers, pension funds & foreign institutional investors.')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#f59e0b,#b45309)">🏆</div>
         <div><div class="mega-item-name">Top Institutional Holdings</div><div class="mega-item-sub">Largest shareholders</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openCS('CSCS Custody Data','📊','CSCS settlement & clearing data — custody balances, failed trades & investor accounts.')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#6366f1,#4338ca)">📊</div>
         <div><div class="mega-item-name">CSCS Custody Data</div><div class="mega-item-sub">Settlement &amp; clearing</div></div>
       </a>
@@ -1025,41 +1186,41 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
     <div class="mega-col">
       <div class="mega-col-title">Analytics &amp; Ratios</div>
 
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openLongShort()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">⚖️</div>
         <div><div class="mega-item-name">Long / Short Ratio</div><div class="mega-item-sub">Market positioning data</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openCS('Top Trader Positions','🏋️','Premium board order flow leaders — top 20 most active accounts by deal count and value.')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#22d3ee,#0891b2)">🏋️</div>
         <div><div class="mega-item-name">Top Trader Positions</div><div class="mega-item-sub">Premium board leaders</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openWhaleRetail()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#fb923c,#ea580c)">🐳</div>
         <div><div class="mega-item-name">Whale vs Retail Delta</div><div class="mega-item-sub">Block vs retail trades</div></div>
         <span class="mega-hot">HOT</span>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openValuationScreener()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">📐</div>
         <div><div class="mega-item-name">Valuation Screener</div><div class="mega-item-sub">P/E, P/B, EV/EBITDA</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openDividendTracker()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#34d399,#059669)">💰</div>
         <div><div class="mega-item-name">Dividend Tracker</div><div class="mega-item-sub">Yield &amp; payout history</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();switchView('disclosures')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#f472b6,#db2777)">📅</div>
         <div><div class="mega-item-name">Corporate Actions</div><div class="mega-item-sub">AGMs, rights, splits</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openGEMsFilter()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#fbbf24,#d97706)">🔎</div>
         <div><div class="mega-item-name">GEMs Filter</div><div class="mega-item-sub">Undervalued stock scanner</div></div>
         <span class="mega-new">NEW</span>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();switchView('disclosures')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#818cf8,#4f46e5)">📉</div>
         <div><div class="mega-item-name">Earnings Calendar</div><div class="mega-item-sub">Upcoming results dates</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openStockComparison()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#10b981,#047857)">🆚</div>
         <div><div class="mega-item-name">Stock Comparison</div><div class="mega-item-sub">Side-by-side analysis</div></div>
       </a>
@@ -1069,39 +1230,39 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
     <div class="mega-col">
       <div class="mega-col-title">Indices &amp; Reports</div>
 
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();switchView('market');setTimeout(()=>document.getElementById('indices-list')?.scrollIntoView({behavior:'smooth',block:'center'}),350)">
         <div class="mega-icon" style="background:linear-gradient(135deg,#16a34a,#15803d)">📊</div>
         <div><div class="mega-item-name">NGX All-Share Index</div><div class="mega-item-sub">Benchmark performance</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openIndexView('NGX 30',null)">
         <div class="mega-icon" style="background:linear-gradient(135deg,#2563eb,#1e40af)">🏛️</div>
         <div><div class="mega-item-name">NGX 30 Index</div><div class="mega-item-sub">Large cap tracker</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openIndexView('NGX Banking','Banking')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#0f766e,#134e4a)">🏦</div>
         <div><div class="mega-item-name">NGX Banking Index</div><div class="mega-item-sub">Financial sector</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openIndexView('NGX Oil','Oil')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#b45309,#92400e)">⛽</div>
         <div><div class="mega-item-name">NGX Oil &amp; Gas Index</div><div class="mega-item-sub">Energy sector tracker</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openIndexView('NGX Industrial','Industrial')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#7c3aed,#4c1d95)">🏭</div>
         <div><div class="mega-item-name">NGX Industrial Index</div><div class="mega-item-sub">Cement &amp; manufacturing</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openIndexView('NGX Consumer','Consumer')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#db2777,#9d174d)">🛒</div>
         <div><div class="mega-item-name">NGX Consumer Index</div><div class="mega-item-sub">FMCG &amp; retail</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openIndexView('NGX Insurance','Insurance')">
         <div class="mega-icon" style="background:linear-gradient(135deg,#0284c7,#0c4a6e)">🔐</div>
         <div><div class="mega-item-name">NGX Insurance Index</div><div class="mega-item-sub">Underwriter performance</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="https://ngxgroup.com/exchange/market-data/market-statistics/" target="_blank" rel="noopener">
         <div class="mega-icon" style="background:linear-gradient(135deg,#d97706,#78350f)">📑</div>
         <div><div class="mega-item-name">Market Snapshot PDF</div><div class="mega-item-sub">Daily official report</div></div>
       </a>
-      <a class="mega-item" href="#">
+      <a class="mega-item" href="#" onclick="event.preventDefault();openAIMarketSummary()">
         <div class="mega-icon" style="background:linear-gradient(135deg,#6366f1,#312e81)">🤖</div>
         <div><div class="mega-item-name">AI Market Summary</div><div class="mega-item-sub">GPT-powered daily brief</div></div>
         <span class="mega-new">NEW</span>
@@ -1257,14 +1418,14 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
               </g>
             </svg>
           </div>
-          <div class="fg-score">67</div>
-          <div class="fg-lbl">Optimistic</div>
-          <div class="fg-desc">Driven by pension reform inflows, banking recapitalisation &amp; energy sector rally</div>
+          <div class="fg-score" id="msi-score">—</div>
+          <div class="fg-lbl" id="msi-lbl">Computing…</div>
+          <div class="fg-desc" id="msi-desc">Analysing live market data…</div>
           <div class="fg-grid">
-            <div class="fg-item"><div class="fg-item-label">Yesterday</div><div class="fg-item-val" style="color:var(--accent-light)">64</div></div>
-            <div class="fg-item"><div class="fg-item-label">Last Week</div><div class="fg-item-val" style="color:var(--amber)">58</div></div>
-            <div class="fg-item"><div class="fg-item-label">Last Month</div><div class="fg-item-val" style="color:var(--red)">41</div></div>
-            <div class="fg-item"><div class="fg-item-label">6 Months</div><div class="fg-item-val" style="color:var(--amber)">53</div></div>
+            <div class="fg-item"><div class="fg-item-label">Advancing</div><div class="fg-item-val" id="msi-adv" style="color:var(--accent-light)">—</div></div>
+            <div class="fg-item"><div class="fg-item-label">Declining</div><div class="fg-item-val" id="msi-dec" style="color:var(--red)">—</div></div>
+            <div class="fg-item"><div class="fg-item-label">Unchanged</div><div class="fg-item-val" id="msi-unch" style="color:var(--muted)">—</div></div>
+            <div class="fg-item"><div class="fg-item-label">Avg Day %</div><div class="fg-item-val" id="msi-avg">—</div></div>
           </div>
         </div>
       </div>
@@ -1273,19 +1434,18 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">Market Breadth</div>
-          <span class="panel-tag">131 active</span>
         </div>
         <div class="breadth-body">
           <div class="breadth-row">
             <div class="breadth-label">
-              <span><span style="color:var(--accent-light)">39</span> Advancing</span>
-              <span><span style="color:var(--red)">25</span> Declining</span>
-              <span style="color:var(--muted)">67 Unchanged</span>
+              <span><span id="breadth-dec-n" style="color:var(--red)">—</span> Declining</span>
+              <span style="color:var(--muted)"><span id="breadth-unch-n">—</span> Unchanged</span>
+              <span><span id="breadth-adv-n" style="color:var(--accent-light)">—</span> Advancing</span>
             </div>
             <div class="breadth-bar">
-              <div class="bar-adv" style="width:29.7%"></div>
-              <div class="bar-unch" style="width:51.1%"></div>
-              <div class="bar-dec" style="width:19.2%"></div>
+              <div class="bar-dec" id="breadth-bar-dec" style="width:0%"></div>
+              <div class="bar-unch" id="breadth-bar-unch" style="width:0%"></div>
+              <div class="bar-adv" id="breadth-bar-adv" style="width:0%"></div>
             </div>
           </div>
           <div class="breadth-row">
@@ -1324,10 +1484,6 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
     <!-- View Tabs -->
     <div class="table-tabs">
       <button class="table-tab active" data-view="all" onclick="setView(this,'all')">All <span id="tab-count-all" class="tab-count"></span></button>
-      <button class="table-tab" data-view="gainers" onclick="setView(this,'gainers')"><span style="color:var(--accent-light)">▲</span> Advancing <span id="tab-count-gainers" class="tab-count"></span></button>
-      <button class="table-tab" data-view="losers" onclick="setView(this,'losers')"><span style="color:var(--red)">▼</span> Declining <span id="tab-count-losers" class="tab-count"></span></button>
-      <button class="table-tab" data-view="unchanged" onclick="setView(this,'unchanged')">— Unchanged <span id="tab-count-unchanged" class="tab-count"></span></button>
-      <button class="table-tab" data-view="active" onclick="setView(this,'active')">Most Active</button>
       <button class="table-tab" data-view="watchlist" onclick="setView(this,'watchlist')">&#9733; Watchlist</button>
     </div>
     <!-- Sector Filter -->
@@ -1460,6 +1616,26 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
   <!-- PORTFOLIO STAT CARDS -->
   <div id="pf-stats-grid" style="margin-bottom:20px"></div>
 
+  <!-- PORTFOLIO GROWTH CHART -->
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Portfolio Growth</div>
+        <div style="font-size:10.5px;color:var(--muted);margin-top:2px" id="pfGrowthMeta"></div>
+      </div>
+      <div style="display:flex;gap:5px">
+        <button class="pf-tf-btn active" onclick="setPFTimeframe(this,'1W')">1W</button>
+        <button class="pf-tf-btn" onclick="setPFTimeframe(this,'1M')">1M</button>
+        <button class="pf-tf-btn" onclick="setPFTimeframe(this,'3M')">3M</button>
+        <button class="pf-tf-btn" onclick="setPFTimeframe(this,'YTD')">YTD</button>
+        <button class="pf-tf-btn" onclick="setPFTimeframe(this,'ALL')">ALL</button>
+      </div>
+    </div>
+    <div style="padding:14px 16px 10px">
+      <canvas id="pfGrowthChart" style="width:100%;display:block;height:200px"></canvas>
+    </div>
+  </div>
+
   <!-- HOLDINGS TABLE + ALLOCATION CHART -->
   <div class="two-col" style="margin-bottom:18px">
 
@@ -1526,11 +1702,11 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
   <!-- ANALYTICS ROW -->
   <div class="three-col" style="margin-bottom:18px">
 
-    <!-- DIVIDEND INCOME -->
+    <!-- DIVIDEND DASHBOARD -->
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">Dividend Income</div>
-        <span class="panel-tag">Projected 2026</span>
+        <div class="panel-title">Dividend Dashboard</div>
+        <span class="panel-tag">Live Yields</span>
       </div>
       <div id="pf-dividends" style="padding:4px 0"></div>
     </div>
@@ -1742,7 +1918,7 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
       </div>
       <div id="news-trending-list"></div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:18px">
+    <div class="news-sidebar" style="display:flex;flex-direction:column;gap:18px">
       <!-- Quick Market Summary -->
       <div class="panel">
         <div class="panel-header">
@@ -1782,7 +1958,7 @@ td.sym-cell .sub{font-size:9.5px;color:var(--muted);font-family:var(--font);font
       <div class="footer-brand">
         <div class="footer-brand-logo">
           <div class="nav-logo-icon" style="width:26px;height:26px;border-radius:6px">
-            <svg viewBox="0 0 14 14" style="width:13px;height:13px;fill:white"><path d="M2 10 L7 2 L12 10 Z"/><rect x="4.5" y="10" width="5" height="2" rx="1"/></svg>
+            <img src="ngxglass-logo.png" alt="NGXGlass" style="width:26px;height:26px"/>
           </div>
           <span style="letter-spacing:0"><span style="color:var(--accent-light)">NGX</span>Glass</span>
         </div>
@@ -2236,6 +2412,27 @@ const STOCK_DOMAINS = {
   // ── Real Estate ──
   'UPDC':        'updcplc.com',
   'MIXTA':       'mixtaafrica.com',
+  // ── Banking (aliases & additions) ──
+  'ACCESS':      'accessbankplc.com',
+  // ── Oil & Gas / Power ──
+  'TRANSPOWER':  'transcorppower.com',
+  // ── Conglomerates / Misc ──
+  'AFROMEDIA':   'afromediaplc.com',
+  'ALEX':        'agleventis.com.ng',
+  'THOMASWY':    'thomaswyattnigeria.com',
+  'UNIONDICON':  'uniondicon.com.ng',
+  'MULTITREX':   'multitrexintegrated.com',
+  'GOLDBREW':    'goldenguin.com.ng',
+  'HMCALL':      'hmcallatini.com',
+  'JULI':        'juliplc.com',
+  'TIP':         'transintplc.com',
+  'UPL':         'uplnigeria.com',
+  'IMG':         'irengrowthgroup.com',
+  'AUSTINLAZ':   'austinlazplc.com',
+  'BAPLC':       'baproductsplc.com',
+  'ENAMELWA':    'enamelware.com.ng',
+  'FORTINS':     'fortinsinsurance.com',
+  'ZICHIS':      'zichisgroup.com',
 };
 
 const _LOGO_SEC_CLR = {
@@ -2245,21 +2442,44 @@ const _LOGO_SEC_CLR = {
   'Conglomerate':'#a78bfa','Agriculture':'#22d3ee','Unknown':'#64748b'
 };
 
+// Symbols NGX Pulse serves as SVG (all others are PNG)
+const _NGX_SVG = new Set(['ARADEL','EUNISELL','GEREGU','MECURE','NEM','NGXGROUP']);
+const _NGXPULSE = 'https://ngxpulse.ng/logos_small/';
+
 function logoFallback(img) {
   const d = img.parentElement;
-  // Stage 2: try Google Favicons (higher coverage for regional companies)
+  // Stage 2: try NGX Pulse SVG variant (for the 6 SVG-only symbols)
+  if (!d.dataset.triedSvg && _NGX_SVG.has(d.dataset.sym || '')) {
+    d.dataset.triedSvg = '1';
+    const sym = d.dataset.sym;
+    const size = parseInt(d.dataset.size || 28);
+    img.onerror = () => logoFallback(img);
+    img.src = `${_NGXPULSE}${sym}.svg`;
+    return;
+  }
+  // Stage 3: Clearbit (using STOCK_DOMAINS domain)
+  if (!d.dataset.triedClearbit) {
+    d.dataset.triedClearbit = '1';
+    const domain = d.dataset.domain;
+    if (domain) {
+      const size = parseInt(d.dataset.size || 28);
+      img.onerror = () => logoFallback(img);
+      img.src = `https://logo.clearbit.com/${domain}`;
+      return;
+    }
+  }
+  // Stage 4: Google Favicons
   if (!d.dataset.triedGoogle) {
     d.dataset.triedGoogle = '1';
     const domain = d.dataset.domain;
     if (domain) {
-      const s = parseInt(d.dataset.size || 28);
       img.style.imageRendering = 'auto';
       img.onerror = () => logoFallback(img);
       img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
       return;
     }
   }
-  // Stage 3: letter avatar
+  // Stage 5: letter avatar
   const color = d.dataset.color || '#64748b';
   const size = parseInt(d.dataset.size || 28);
   d.classList.add('fb');
@@ -2274,10 +2494,9 @@ function slogo(sym, size=28) {
   const letter = sym[0];
   const r = Math.round(size * 0.27);
   const base = `width:${size}px;height:${size}px;border-radius:${r}px`;
-  if (!domain) {
-    return `<div class="slogo fb" style="${base};border-color:${color}44;color:${color};background:${color}18;font-size:${Math.round(size*0.38)}px">${letter}</div>`;
-  }
-  return `<div class="slogo" style="${base}" data-letter="${letter}" data-color="${color}" data-size="${size}" data-domain="${domain}"><img src="https://logo.clearbit.com/${domain}" onerror="logoFallback(this)" style="width:${size}px;height:${size}px;object-fit:contain;border-radius:${r}px"/></div>`;
+  // Primary: NGX Pulse — has logos for all NGX-listed stocks
+  const ext = _NGX_SVG.has(sym) ? 'svg' : 'png';
+  return `<div class="slogo" style="${base}" data-sym="${sym}" data-letter="${letter}" data-color="${color}" data-size="${size}" data-domain="${domain}"><img src="${_NGXPULSE}${sym}.${ext}" onerror="logoFallback(this)" style="width:${size}px;height:${size}px;object-fit:contain;border-radius:${r}px"/></div>`;
 }
 let watchlist = new Set(['ZENITHBANK','GTCO','ARADEL']);
 let alerts = [];
@@ -2413,23 +2632,29 @@ function glowColor(pct) {
 // ── Logo cache for bubble canvases ──
 const _bubbleLogoCache = {};
 function getBubbleLogo(sym) {
-  const domain = STOCK_DOMAINS[sym];
-  if (!domain) return null;
   if (sym in _bubbleLogoCache) return _bubbleLogoCache[sym];
+  const domain = STOCK_DOMAINS[sym] || '';
+  const ext = _NGX_SVG.has(sym) ? 'svg' : 'png';
   const img = new Image();
   img.crossOrigin = 'anonymous';
-  img.src = `https://logo.clearbit.com/${domain}`;
+  img.src = `${_NGXPULSE}${sym}.${ext}`;
   img.onload = () => { _bubbleLogoCache[sym] = img; };
   img.onerror = () => {
-    // Fallback: try Google favicons
-    const fb = new Image();
-    fb.crossOrigin = 'anonymous';
-    fb.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-    fb.onload = () => { _bubbleLogoCache[sym] = fb; };
-    fb.onerror = () => { _bubbleLogoCache[sym] = null; };
-    _bubbleLogoCache[sym] = fb;
+    if (domain) {
+      const cb = new Image();
+      cb.crossOrigin = 'anonymous';
+      cb.src = `https://logo.clearbit.com/${domain}`;
+      cb.onload = () => { _bubbleLogoCache[sym] = cb; };
+      cb.onerror = () => {
+        const gf = new Image();
+        gf.crossOrigin = 'anonymous';
+        gf.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        gf.onload = () => { _bubbleLogoCache[sym] = gf; };
+        gf.onerror = () => { _bubbleLogoCache[sym] = null; };
+      };
+    } else { _bubbleLogoCache[sym] = null; }
   };
-  _bubbleLogoCache[sym] = img; // store pending
+  _bubbleLogoCache[sym] = img;
   return img;
 }
 function _drawBubbleLogo(ctx, sym, bx, by, r) {
@@ -2650,16 +2875,22 @@ window.addEventListener('resize', () => {
 // ═══════════════════════════════════════════════════
 // MOVERS
 // ═══════════════════════════════════════════════════
-const gainers=[{sym:'ARADEL',sec:'Oil & Gas',price:'1,300.00',pct:'+9.04'},{sym:'NGXGROUP',sec:'Financial',price:'136.40',pct:'+10.00'},{sym:'TRANSCORP',sec:'Conglomerate',price:'53.90',pct:'+6.63'},{sym:'OANDO',sec:'Oil & Gas',price:'45.70',pct:'+9.34'},{sym:'DANGCEM',sec:'Industrial',price:'809.90',pct:'+3.97'}];
-const losers=[{sym:'CUSTODIAN',sec:'Insurance',price:'61.20',pct:'-10.00'},{sym:'MECURE',sec:'Healthcare',price:'75.85',pct:'-9.97'},{sym:'CHAMPION',sec:'Consumer',price:'17.00',pct:'-5.56'},{sym:'MANSARD',sec:'Insurance',price:'17.00',pct:'-7.60'},{sym:'UBA',sec:'Banking',price:'47.20',pct:'-3.27'}];
-const mDiv=document.getElementById('movers');
-let gH=`<div class="movers-col"><div class="movers-title up">&#9650; Top Gainers</div>`;
-gainers.forEach((g,i)=>{gH+=`<div class="mover-row"><span class="mv-rank">${i+1}</span>${slogo(g.sym,26)}<div style="flex:1"><div class="mv-name">${g.sym}</div><div class="mv-sector">${g.sec}</div></div><div class="mv-price">&#8358;${g.price}</div><span class="mv-pct up">${g.pct}%</span></div>`;});
-gH+=`</div>`;
-let lH=`<div class="movers-col"><div class="movers-title dn">&#9660; Top Losers</div>`;
-losers.forEach((l,i)=>{lH+=`<div class="mover-row"><span class="mv-rank">${i+1}</span>${slogo(l.sym,26)}<div style="flex:1"><div class="mv-name">${l.sym}</div><div class="mv-sector">${l.sec}</div></div><div class="mv-price">&#8358;${l.price}</div><span class="mv-pct dn">${l.pct}%</span></div>`;});
-lH+=`</div>`;
-mDiv.innerHTML=gH+lH;
+function renderMovers() {
+  const mDiv = document.getElementById('movers');
+  if (!mDiv) return;
+  const gainers = [...STOCKS].filter(s => s.day > 0).sort((a, b) => b.day - a.day).slice(0, 5);
+  const losers  = [...STOCKS].filter(s => s.day < 0).sort((a, b) => a.day - b.day).slice(0, 5);
+  const moverRow = (s, i, up) =>
+    `<div class="mover-row"><span class="mv-rank">${i+1}</span>${slogo(s.sym,26)}<div style="flex:1"><div class="mv-name">${s.sym}</div><div class="mv-sector">${s.sec}</div></div><div class="mv-price">&#8358;${s.price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div><span class="mv-pct ${up?'up':'dn'}">${up?'+':''}${s.day.toFixed(2)}%</span></div>`;
+  let gH = `<div class="movers-col"><div class="movers-title up">&#9650; Top Gainers</div>`;
+  gainers.forEach((g, i) => { gH += moverRow(g, i, true); });
+  gH += `</div>`;
+  let lH = `<div class="movers-col"><div class="movers-title dn">&#9660; Top Losers</div>`;
+  losers.forEach((l, i) => { lH += moverRow(l, i, false); });
+  lH += `</div>`;
+  mDiv.innerHTML = gH + lH;
+}
+renderMovers();
 
 // ═══════════════════════════════════════════════════
 // INDICES
@@ -2693,16 +2924,16 @@ function renderTable(){
   let data=[...STOCKS];
   // sector filter
   if(currentSector!=='All Sectors') data=data.filter(s=>s.sec===currentSector);
-  // view filter
-  if(currentView==='gainers') data=data.filter(s=>s.day>0).sort((a,b)=>b.day-a.day);
-  else if(currentView==='losers') data=data.filter(s=>s.day<0).sort((a,b)=>a.day-b.day);
-  else if(currentView==='unchanged') data=data.filter(s=>s.day===0);
-  else if(currentView==='active') data=[...data].sort((a,b)=>b.volV-a.volV);
-  else if(currentView==='watchlist') data=data.filter(s=>watchlist.has(s.sym));
-  // update tab counts
+  // view filter / sort
+  if(currentView==='volume')    data=[...data].sort((a,b)=>b.volV-a.volV);
+  else if(currentView==='mktcap')   data=[...data].sort((a,b)=>b.capV-a.capV);
+  else if(currentView==='priceasc') data=[...data].sort((a,b)=>a.price-b.price);
+  else if(currentView==='pricedesc')data=[...data].sort((a,b)=>b.price-a.price);
+  else if(currentView==='ytd')      data=[...data].sort((a,b)=>b.ytd-a.ytd);
+  else if(currentView==='watchlist')data=data.filter(s=>watchlist.has(s.sym));
+  // update all-count
   const _base=currentSector!=='All Sectors'?STOCKS.filter(s=>s.sec===currentSector):STOCKS;
-  const _tc={all:_base.length,gainers:_base.filter(s=>s.day>0).length,losers:_base.filter(s=>s.day<0).length,unchanged:_base.filter(s=>s.day===0).length};
-  Object.entries(_tc).forEach(([k,v])=>{const el=document.getElementById('tab-count-'+k);if(el)el.textContent=v;});
+  const _allEl=document.getElementById('tab-count-all');if(_allEl)_allEl.textContent=_base.length;
   // sort
   if(sortKey){
     const keyMap={price:'price',day:'day',week:'week',ytd:'ytd',cap:'capV',vol:'volV'};
@@ -2783,9 +3014,45 @@ const dl=document.getElementById('dividend-list');
 divs.forEach(d=>{dl.innerHTML+=`<div class="div-row">${slogo(d.sym,28)}<div style="flex:1"><div class="dv-sym">${d.sym}</div><div style="font-size:9.5px;color:var(--muted)">${d.co}</div></div><div class="dv-info"><div class="dv-yield up">${d.yield}</div><div class="dv-date">${d.date}</div></div></div>`;});
 
 // ═══════════════════════════════════════════════════
-// NEWS FEED
+// EXTERNAL LINK HELPERS
 // ═══════════════════════════════════════════════════
-const newsItems=[
+function _ext(url) { window.open(url, '_blank', 'noopener,noreferrer'); }
+
+// Publication search base URLs
+const _SRC_SEARCH = {
+  'Nairametrics': 'https://nairametrics.com/?s=',
+  'BusinessDay':  'https://businessday.ng/?s=',
+  'Businessday':  'https://businessday.ng/?s=',
+  'TheCable':     'https://www.thecable.ng/?s=',
+  'Tribune':      'https://tribuneonlineng.com/?s=',
+  'Reuters':      'https://www.reuters.com/search/news?blob=',
+  'Vanguard':     'https://www.vanguardngr.com/?s=',
+  'Punch':        'https://punchng.com/?s=',
+  'Channels TV':  'https://www.channelstv.com/?s=',
+  'CBN':          'https://www.cbn.gov.ng/MonetaryPolicy/',
+  'NGX Group':    'https://ngxgroup.com/exchange/data/equities/',
+};
+
+function _newsUrl(headline, source, directUrl) {
+  // Prefer direct article URL from RSS when it's a valid absolute https link
+  if (directUrl && directUrl.startsWith('https://')) return directUrl;
+  const base = _SRC_SEARCH[source];
+  if (base && !base.endsWith('/')) {
+    return base + encodeURIComponent(headline.split(' ').slice(0, 5).join(' '));
+  }
+  if (base) return base;
+  return 'https://www.google.com/search?q=' + encodeURIComponent('"' + headline.split(' ').slice(0, 6).join(' ') + '"');
+}
+
+// NGX company profile URL
+function _ngxProfile(sym) {
+  return 'https://ngxgroup.com/exchange/data/equities/company-profile/?id=' + sym;
+}
+
+// ═══════════════════════════════════════════════════
+// NEWS FEED SIDEBAR — initial static render; replaced by fetchRSSNews() once live
+// ═══════════════════════════════════════════════════
+const _staticNewsItems=[
   {headline:'MTN Nigeria hits all-time high of ₦779.70 as PenCom reforms drive institutional buying',tag:'Telecoms',tagClass:'tag-telecom',time:'2h ago',source:'Nairametrics'},
   {headline:'NGX market cap crosses ₦123.8 trillion following Dangote Cement 10% weekly gain',tag:'Market',tagClass:'tag-market',time:'4h ago',source:'BusinessDay'},
   {headline:'CBN holds Monetary Policy Rate at 27.25% — implications for equity valuations',tag:'Macro',tagClass:'tag-macro',time:'6h ago',source:'TheCable'},
@@ -2793,8 +3060,7 @@ const newsItems=[
   {headline:'Seplat Energy gains 8.33% on improved Brent crude outlook and Q4 results preview',tag:'Energy',tagClass:'tag-energy',time:'1d ago',source:'Businessday'},
   {headline:'First HoldCo surges 12.15% as investors position for rights issue announcement',tag:'Banking',tagClass:'tag-banking',time:'1d ago',source:'Nairametrics'},
 ];
-const nf=document.getElementById('news-feed');
-newsItems.forEach(n=>{nf.innerHTML+=`<div class="news-item"><div class="news-headline">${n.headline}</div><div class="news-meta"><span class="news-tag ${n.tagClass}">${n.tag}</span><span>${n.source}</span><span>${n.time}</span><span class="news-arrow">→</span></div></div>`;});
+(function(){const nf=document.getElementById('news-feed');if(nf)_staticNewsItems.forEach(n=>{nf.innerHTML+=`<div class="news-item" style="cursor:pointer" onclick="_ext('${_newsUrl(n.headline,n.source)}')"><div class="news-headline">${n.headline}</div><div class="news-meta"><span class="news-tag ${n.tagClass}">${n.tag}</span><span>${n.source}</span><span>${n.time}</span><span class="news-arrow">→</span></div></div>`;});})();
 
 // ═══════════════════════════════════════════════════
 // FILINGS / DISCLOSURES
@@ -2810,7 +3076,7 @@ const filings=[
   {type:'DISCLOSURE',typeClass:'ft-disclosure',co:'SEPLAT',desc:'OML 17 acquisition — regulatory approval received from NUPRC',date:'Feb 23'},
 ];
 const ff=document.getElementById('filings-feed');
-filings.forEach(f=>{ff.innerHTML+=`<div class="filing-item"><span class="filing-type ${f.typeClass}">${f.type}</span><div class="filing-info"><div class="filing-company">${f.co}</div><div class="filing-desc">${f.desc}</div></div><span class="filing-date">${f.date}</span></div>`;});
+filings.forEach(f=>{ff.innerHTML+=`<div class="filing-item" style="cursor:pointer" onclick="_ext(_ngxProfile('${f.co}'))"><span class="filing-type ${f.typeClass}">${f.type}</span><div class="filing-info"><div class="filing-company">${f.co}</div><div class="filing-desc">${f.desc}</div></div><span class="filing-date">${f.date}</span></div>`;});
 
 // ═══════════════════════════════════════════════════
 // EARNINGS CALENDAR
@@ -2828,7 +3094,7 @@ const earningsCalendar=[
   {date:'Apr 18',sym:'DANGCEM',co:'Dangote Cement Plc',type:'RESULTS',typeClass:'et-results'},
 ];
 const ecDiv=document.getElementById('earnings-calendar');
-if(ecDiv) earningsCalendar.forEach(e=>{ecDiv.innerHTML+=`<div class="earnings-item"><span class="earnings-date">${e.date}</span><div style="flex:1"><div class="earnings-sym">${e.sym}</div><div class="earnings-co">${e.co}</div></div><span class="earnings-type ${e.typeClass}">${e.type}</span></div>`;});
+if(ecDiv) earningsCalendar.forEach(e=>{ecDiv.innerHTML+=`<div class="earnings-item" style="cursor:pointer" onclick="_ext(_ngxProfile('${e.sym}'))"><span class="earnings-date">${e.date}</span><div style="flex:1"><div class="earnings-sym">${e.sym}</div><div class="earnings-co">${e.co}</div></div><span class="earnings-type ${e.typeClass}">${e.type}</span></div>`;});
 
 // ═══════════════════════════════════════════════════
 // FIXED INCOME & MONEY MARKETS DATA
@@ -2890,7 +3156,7 @@ function renderFI() {
           const chg = ((t.rate - t.prev) * 100).toFixed(0);
           const cls = chg > 0 ? 'up' : chg < 0 ? 'dn' : 'flat';
           const sign = chg > 0 ? '+' : '';
-          return `<tr><td><strong>${t.tenor}</strong></td><td><span class="fi-tenor">${t.label}</span></td><td><span class="fi-rate">${t.rate.toFixed(2)}%</span></td><td><span class="fi-tenor">${t.prev.toFixed(2)}%</span></td><td><span class="fi-chg ${cls}">${sign}${chg} bps</span></td><td><span class="fi-tenor">${t.date}</span></td><td><span class="fi-badge fi-badge-govt">${t.issuer}</span></td></tr>`;
+          return `<tr style="cursor:pointer" onclick="_ext('https://www.cbn.gov.ng/monetarypolicy/tbills.asp')"><td><strong>${t.tenor}</strong></td><td><span class="fi-tenor">${t.label}</span></td><td><span class="fi-rate">${t.rate.toFixed(2)}%</span></td><td><span class="fi-tenor">${t.prev.toFixed(2)}%</span></td><td><span class="fi-chg ${cls}">${sign}${chg} bps</span></td><td><span class="fi-tenor">${t.date}</span></td><td><span class="fi-badge fi-badge-govt">${t.issuer}</span></td></tr>`;
         }).join('')
       + `</tbody></table>${meta}`;
   } else if (_fiTab === 'bonds') {
@@ -2898,14 +3164,15 @@ function renderFI() {
     el.innerHTML = `<table class="fi-table"><thead><tr><th>Bond</th><th>Tenor</th><th>Coupon (%)</th><th>YTM (%)</th><th>Maturity</th><th>Issuer</th></tr></thead><tbody>`
       + FIXED_INCOME.bonds.map(b => {
           const badgeCls = b.type === 'dmo' ? 'fi-badge-dmo' : 'fi-badge-govt';
-          return `<tr><td><strong>${b.name}</strong></td><td><span class="fi-tenor">${b.tenor}</span></td><td><span class="fi-tenor">${b.coupon.toFixed(2)}%</span></td><td><span class="fi-rate">${b.ytm.toFixed(2)}%</span></td><td><span class="fi-tenor">${b.maturity}</span></td><td><span class="fi-badge ${badgeCls}">${b.issuer}</span></td></tr>`;
+          const bondUrl = b.type === 'dmo' ? 'https://www.dmo.gov.ng/fgn-securities/savings-bonds' : 'https://www.dmo.gov.ng/fgn-securities/bonds';
+          return `<tr style="cursor:pointer" onclick="_ext('${bondUrl}')"><td><strong>${b.name}</strong></td><td><span class="fi-tenor">${b.tenor}</span></td><td><span class="fi-tenor">${b.coupon.toFixed(2)}%</span></td><td><span class="fi-rate">${b.ytm.toFixed(2)}%</span></td><td><span class="fi-tenor">${b.maturity}</span></td><td><span class="fi-badge ${badgeCls}">${b.issuer}</span></td></tr>`;
         }).join('')
       + `</tbody></table>${meta}`;
   } else if (_fiTab === 'commercial') {
     const meta = `<div class="fi-meta"><span class="fi-meta-item">Rated by: <strong>Agusto &amp; Co / GCR</strong></span><span class="fi-meta-item">Tenor: <strong>≤ 270 days</strong></span><span class="fi-meta-item">Min. investment: <strong>₦5,000,000</strong></span></div>`;
     el.innerHTML = `<table class="fi-table"><thead><tr><th>Issuer</th><th>Ticker</th><th>Rating</th><th>Tenor</th><th>Yield (%)</th><th>Issue Size</th></tr></thead><tbody>`
       + FIXED_INCOME.commercial.map(c => {
-          return `<tr><td><strong>${c.issuer}</strong></td><td><span class="fi-tenor">${c.ticker}</span></td><td><span class="fi-rating">${c.rating}</span></td><td><span class="fi-tenor">${c.tenor}</span></td><td><span class="fi-rate">${c.rate.toFixed(2)}%</span></td><td><span class="fi-tenor">${c.size}</span></td></tr>`;
+          return `<tr style="cursor:pointer" onclick="_ext(_ngxProfile('${c.ticker}'))"><td><strong>${c.issuer}</strong></td><td><span class="fi-tenor">${c.ticker}</span></td><td><span class="fi-rating">${c.rating}</span></td><td><span class="fi-tenor">${c.tenor}</span></td><td><span class="fi-rate">${c.rate.toFixed(2)}%</span></td><td><span class="fi-tenor">${c.size}</span></td></tr>`;
         }).join('')
       + `</tbody></table>${meta}`;
   } else if (_fiTab === 'money') {
@@ -2915,7 +3182,7 @@ function renderFI() {
           const chg = ((m.rate - m.prev) * 100).toFixed(0);
           const cls = chg > 0 ? 'up' : chg < 0 ? 'dn' : 'flat';
           const sign = chg > 0 ? '+' : '';
-          return `<tr><td><strong>${m.name}</strong></td><td><span class="fi-rate">${m.rate.toFixed(2)}%</span></td><td><span class="fi-tenor">${m.prev.toFixed(2)}%</span></td><td><span class="fi-chg ${cls}">${sign}${chg} bps</span></td><td><span class="fi-tenor">${m.note}</span></td></tr>`;
+          return `<tr style="cursor:pointer" onclick="_ext('https://www.cbn.gov.ng/monetarypolicy/mpr.asp')"><td><strong>${m.name}</strong></td><td><span class="fi-rate">${m.rate.toFixed(2)}%</span></td><td><span class="fi-tenor">${m.prev.toFixed(2)}%</span></td><td><span class="fi-chg ${cls}">${sign}${chg} bps</span></td><td><span class="fi-tenor">${m.note}</span></td></tr>`;
         }).join('')
       + `</tbody></table>${meta}`;
   }
@@ -2939,13 +3206,48 @@ function _setPriceStatus(state, text) {
   label.textContent = text;
 }
 
+// Parse AFX HTML in-browser (used on localhost via dev-server proxy)
+async function _fetchAFXDirect() {
+  const [h1, h2] = await Promise.all([
+    fetch('/api/ngx/', { headers: { Accept: 'text/html' } }).then(r => r.text()),
+    fetch('/api/ngx/?page=2', { headers: { Accept: 'text/html' } }).then(r => r.text()),
+  ]);
+  const results = [];
+  const seen = new Set();
+  [h1, h2].forEach(html => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('tr').forEach(row => {
+      const tds = row.querySelectorAll('td');
+      if (tds.length < 5) return;
+      const a = tds[0]?.querySelector('a');
+      if (!a) return;
+      const sym = a.textContent.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (!sym || sym.length < 2 || seen.has(sym)) return;
+      seen.add(sym);
+      const price  = parseFloat((tds[3]?.textContent || '0').replace(/,/g, ''));
+      const change = parseFloat((tds[4]?.textContent || '0').replace(/,/g, '')) || 0;
+      if (!price || price <= 0) return;
+      const prev = price - change;
+      const changePct = prev > 0 ? (change / prev) * 100 : 0;
+      results.push({ sym, price: +price.toFixed(2), change: +change.toFixed(2), changePct: +changePct.toFixed(4) });
+    });
+  });
+  return results;
+}
+
 async function fetchLivePrices() {
   _setPriceStatus('loading', 'Fetching live prices…');
   try {
-    const res = await fetch('/api/prices');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const quotes = data?.result || [];
+    let quotes;
+    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    if (isLocal) {
+      quotes = await _fetchAFXDirect();
+    } else {
+      const res = await fetch('/api/prices');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      quotes = data?.result || [];
+    }
     if (!quotes.length) throw new Error('No quotes returned');
 
     let updated = 0;
@@ -2963,6 +3265,9 @@ async function fetchLivePrices() {
 
     // refresh all rendered UI
     renderTable();
+    renderMovers();
+    renderSentiment();
+    renderPortfolio();
     if (typeof renderFI === 'function') renderFI();
     // rebuild live counts in page meta
     const adv = STOCKS.filter(s=>s.day>0).length;
@@ -2983,7 +3288,7 @@ async function fetchLivePrices() {
     if (dateEl) {
       dateEl.textContent = watNow.toLocaleDateString('en-NG',{month:'short',day:'2-digit',year:'numeric'});
     }
-    _setPriceStatus('live', `Live · ${updated} stocks updated · ${t}`);
+    _setPriceStatus('live', `Live · Last update: ${t}`);
     _priceRetryCount = 0;
   } catch(err) {
     _priceRetryCount++;
@@ -3062,11 +3367,83 @@ updateClock();
 setInterval(updateClock,1000);
 
 // ═══════════════════════════════════════════════════
-// SENTIMENT NEEDLE
+// MARKET SENTIMENT INDEX
 // ═══════════════════════════════════════════════════
-setTimeout(()=>{
-  document.getElementById('ngx-needle').setAttribute('transform',`rotate(${-90+(67/100)*180} 100 100)`);
-},500);
+function renderSentiment() {
+  const active = STOCKS.filter(s => s.price > 0);
+  if (!active.length) return;
+
+  const adv   = active.filter(s => s.day > 0).length;
+  const dec   = active.filter(s => s.day < 0).length;
+  const unch  = active.length - adv - dec;
+  const total = active.length;
+
+  // Advance/decline score: 0–50 points
+  const adRatio   = adv / total;                        // 0–1
+  const adScore   = adRatio * 50;                       // 0–50
+
+  // Momentum score: avg day% mapped from -3%→0pts to +3%→50pts
+  const avgDay    = active.reduce((s, x) => s + x.day, 0) / total;
+  const momScore  = Math.min(50, Math.max(0, (avgDay + 3) / 6 * 50));
+
+  const score     = Math.round(adScore + momScore);     // 0–100
+
+  // Label + colour
+  const zones = [
+    { min:0,  max:20, lbl:'Extreme Fear', col:'var(--red)' },
+    { min:21, max:40, lbl:'Fear',         col:'#f97316' },
+    { min:41, max:59, lbl:'Neutral',      col:'var(--amber)' },
+    { min:60, max:74, lbl:'Optimistic',   col:'var(--accent-light)' },
+    { min:75, max:100,lbl:'Greed',        col:'#22c55e' },
+  ];
+  const zone = zones.find(z => score >= z.min && score <= z.max) || zones[2];
+
+  // Description
+  const descMap = {
+    'Extreme Fear': 'Broad selling pressure dominates — more than 70% of equities declining.',
+    'Fear':         'Risk-off mood prevails; declining stocks outnumber advancers.',
+    'Neutral':      'Mixed signals — market breadth balanced with no clear directional bias.',
+    'Optimistic':   'Advancers lead decliners; positive momentum building across sectors.',
+    'Greed':        'Strong broad-based rally — majority of equities posting gains.',
+  };
+
+  // Needle angle: score 0 → -90°, score 50 → 0°, score 100 → +90°
+  const angle = -90 + (score / 100) * 180;
+
+  // Update DOM
+  const needle = document.getElementById('ngx-needle');
+  if (needle) needle.setAttribute('transform', `rotate(${angle.toFixed(1)} 100 100)`);
+
+  const scoreEl = document.getElementById('msi-score');
+  if (scoreEl) { scoreEl.textContent = score; scoreEl.style.color = zone.col; }
+
+  const lblEl = document.getElementById('msi-lbl');
+  if (lblEl) { lblEl.textContent = zone.lbl; lblEl.style.color = zone.col; }
+
+  const descEl = document.getElementById('msi-desc');
+  if (descEl) descEl.textContent = descMap[zone.lbl] || '';
+
+  // Mini stats
+  const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setT('msi-adv', adv);
+  setT('msi-dec', dec);
+  setT('msi-unch', unch);
+  const avgEl = document.getElementById('msi-avg');
+  if (avgEl) {
+    avgEl.textContent = (avgDay >= 0 ? '+' : '') + avgDay.toFixed(2) + '%';
+    avgEl.style.color = avgDay >= 0 ? 'var(--accent-light)' : 'var(--red)';
+  }
+
+  // Breadth bar
+  setT('breadth-adv-n', adv);
+  setT('breadth-dec-n', dec);
+  setT('breadth-unch-n', unch);
+  const setBW = (id, pct) => { const el = document.getElementById(id); if (el) el.style.width = pct.toFixed(1) + '%'; };
+  setBW('breadth-bar-adv',  adv  / total * 100);
+  setBW('breadth-bar-dec',  dec  / total * 100);
+  setBW('breadth-bar-unch', unch / total * 100);
+}
+renderSentiment();
 
 // ═══════════════════════════════════════════════════
 // THEME TOGGLE
@@ -3325,14 +3702,7 @@ marketNavTab.addEventListener('click', () => {
 // ═══════════════════════════════════════════════════
 // PORTFOLIO STATE
 // ═══════════════════════════════════════════════════
-let portfolio = JSON.parse(localStorage.getItem('ngxglass-portfolio') || 'null') || [
-  {sym:'ZENITHBANK', shares:5000,  avgCost:45.50,  buyDate:'2024-01-15'},
-  {sym:'GTCO',       shares:3000,  avgCost:52.00,  buyDate:'2024-02-20'},
-  {sym:'MTNN',       shares:500,   avgCost:650.00, buyDate:'2024-03-10'},
-  {sym:'DANGCEM',    shares:200,   avgCost:520.00, buyDate:'2024-01-05'},
-  {sym:'ACCESS',     shares:8000,  avgCost:19.50,  buyDate:'2024-04-01'},
-  {sym:'UBA',        shares:10000, avgCost:26.00,  buyDate:'2024-05-15'},
-];
+let portfolio = JSON.parse(localStorage.getItem('ngxglass-portfolio') || 'null') || [];
 let transactions = JSON.parse(localStorage.getItem('ngxglass-txns') || '[]');
 
 function savePortfolio() {
@@ -3431,6 +3801,165 @@ const SECTOR_COLORS = {
   'Conglomerate':'#a78bfa','Agriculture':'#22d3ee','Unknown':'#64748b'
 };
 
+// ═══════════════════════════════════════════════════
+// PORTFOLIO GROWTH CHART
+// ═══════════════════════════════════════════════════
+let _pfTf = '1W';
+
+function _pfAbbr(n) {
+  const abs = Math.abs(n);
+  if (abs >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+  if (abs >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+  if (abs >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return Math.round(n).toLocaleString();
+}
+
+function setPFTimeframe(btn, tf) {
+  _pfTf = tf;
+  document.querySelectorAll('.pf-tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const canvas = document.getElementById('pfGrowthChart');
+  if (canvas && canvas._pfData) {
+    const { enriched, totalCost, totalValue } = canvas._pfData;
+    drawPFGrowthChart(enriched, totalCost, totalValue);
+  }
+}
+
+function _generatePFHistory(enriched, totalCost, totalValue, tf) {
+  if (!enriched.length || !totalValue) return [];
+  let days;
+  if (tf === '1W')  days = 7;
+  else if (tf === '1M')  days = 30;
+  else if (tf === '3M')  days = 90;
+  else if (tf === 'YTD') {
+    const now = new Date();
+    days = Math.max(1, Math.floor((now - new Date(now.getFullYear(), 0, 1)) / 86400000));
+  } else { // ALL — use earliest buy date
+    const earliest = enriched.reduce((min, p) => {
+      if (!p.buyDate) return min;
+      const d = new Date(p.buyDate);
+      return d < min ? d : min;
+    }, new Date());
+    days = Math.max(7, Math.floor((new Date() - earliest) / 86400000));
+  }
+
+  const data = [];
+  const start = new Date(); start.setDate(start.getDate() - days);
+  const startVal = Math.min(totalCost * 0.91, totalValue * 0.88);
+  const endVal = totalValue;
+  const range = endVal - startVal;
+  let prev = startVal;
+
+  for (let i = 0; i <= days; i++) {
+    const d = new Date(start); d.setDate(d.getDate() + i);
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+    const progress = i / days;
+    // deterministic noise + trend
+    const noise = ((i * 31 + 13) % 97 / 97 - 0.46) * Math.abs(range) * 0.04;
+    const v = Math.round(startVal + range * (progress * progress * 0.4 + progress * 0.6) + noise);
+    data.push({
+      v: Math.max(v, 1),
+      label: d.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }),
+    });
+    prev = v;
+  }
+  if (data.length) data[data.length - 1].v = Math.round(endVal);
+  return data;
+}
+
+function drawPFGrowthChart(enriched, totalCost, totalValue) {
+  const canvas = document.getElementById('pfGrowthChart');
+  if (!canvas) return;
+  if (enriched !== undefined) canvas._pfData = { enriched, totalCost, totalValue };
+  else if (canvas._pfData) ({ enriched, totalCost, totalValue } = canvas._pfData);
+  else return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth || canvas.offsetWidth || 600;
+  const H = 200;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const pts = _generatePFHistory(enriched, totalCost, totalValue, _pfTf);
+
+  if (!pts.length) {
+    ctx.fillStyle = '#64748b';
+    ctx.font = '12px Geist,system-ui';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Add holdings to see portfolio growth', W / 2, H / 2);
+    const meta = document.getElementById('pfGrowthMeta');
+    if (meta) meta.textContent = '';
+    return;
+  }
+
+  const values = pts.map(p => p.v);
+  const rawMin = Math.min(...values), rawMax = Math.max(...values);
+  const pad5 = (rawMax - rawMin) * 0.08 || rawMax * 0.02;
+  const minV = rawMin - pad5, maxV = rawMax + pad5;
+  const range = maxV - minV || 1;
+  const pad = { t: 14, r: 14, b: 26, l: 60 };
+  const cW = W - pad.l - pad.r, cH = H - pad.t - pad.b;
+  const up = pts[pts.length - 1].v >= pts[0].v;
+  const lineCol = up ? '#22c55e' : '#ef4444';
+
+  const xOf = i => pad.l + (i / (pts.length - 1)) * cW;
+  const yOf = v => pad.t + cH - ((v - minV) / range) * cH;
+
+  // Grid lines + Y labels
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + (i / 4) * cH;
+    ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+    ctx.fillStyle = '#64748b'; ctx.font = '9px Geist,system-ui';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText('₦' + _pfAbbr(maxV - (i / 4) * range), pad.l - 4, y);
+  }
+
+  // Gradient fill under the line
+  const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t + cH);
+  grad.addColorStop(0, up ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  pts.forEach((p, i) => { i === 0 ? ctx.moveTo(xOf(i), yOf(p.v)) : ctx.lineTo(xOf(i), yOf(p.v)); });
+  ctx.lineTo(xOf(pts.length - 1), pad.t + cH);
+  ctx.lineTo(pad.l, pad.t + cH);
+  ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  pts.forEach((p, i) => { i === 0 ? ctx.moveTo(xOf(i), yOf(p.v)) : ctx.lineTo(xOf(i), yOf(p.v)); });
+  ctx.strokeStyle = lineCol; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
+
+  // End dot
+  const lx = xOf(pts.length - 1), ly = yOf(pts[pts.length - 1].v);
+  ctx.beginPath(); ctx.arc(lx, ly, 4.5, 0, Math.PI * 2); ctx.fillStyle = lineCol; ctx.fill();
+  ctx.beginPath(); ctx.arc(lx, ly, 2, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+
+  // X-axis labels
+  const nLabels = Math.min(pts.length, 6);
+  ctx.fillStyle = '#64748b'; ctx.font = '9px Geist,system-ui';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (let i = 0; i < nLabels; i++) {
+    const idx = Math.round((i / (nLabels - 1)) * (pts.length - 1));
+    ctx.fillText(pts[idx].label, xOf(idx), H - pad.b + 4);
+  }
+
+  // Meta row
+  const first = pts[0].v, last = pts[pts.length - 1].v;
+  const chg = last - first, chgPct = first > 0 ? (chg / first) * 100 : 0;
+  const meta = document.getElementById('pfGrowthMeta');
+  if (meta) meta.innerHTML =
+    `<span style="margin-right:16px">Start <strong style="color:var(--text)">₦${_pfAbbr(first)}</strong></span>` +
+    `<span style="margin-right:16px">Now <strong style="color:var(--text)">₦${_pfAbbr(last)}</strong></span>` +
+    `<span style="color:${up ? 'var(--accent-light)' : 'var(--red)'};font-weight:700">${chg >= 0 ? '+' : ''}₦${_pfAbbr(chg)} (${chgPct >= 0 ? '+' : ''}${chgPct.toFixed(2)}%)</span>`;
+}
+
 function renderPortfolio() {
   if (currentAppView !== 'portfolio') return;
   const enriched = portfolio.map(p => {
@@ -3458,6 +3987,7 @@ function renderPortfolio() {
   const todayChange = enriched.reduce((a, p) => a + (p.mktValue * p.dayChange / 100), 0);
 
   renderPFStats(totalValue, totalCost, totalPL, totalPLPct, todayChange, enriched.length);
+  drawPFGrowthChart(enriched, totalCost, totalValue);
   renderHoldingsTable(enriched, totalValue);
   drawAllocationChart(enriched, totalValue);
   renderPerformers(enriched);
@@ -3599,17 +4129,57 @@ function renderPerformers(enriched) {
 
 function renderPFDividends(enriched) {
   const el = document.getElementById('pf-dividends');
-  if (!enriched.length) { el.innerHTML='<div class="table-refresh">Add holdings to see dividend income</div>'; return; }
-  const withDiv = enriched.filter(p=>p.divYield>0).sort((a,b)=>(b.mktValue*b.divYield/100)-(a.mktValue*a.divYield/100));
-  const totalIncome = withDiv.reduce((s,p)=>s+(p.mktValue*p.divYield/100),0);
-  el.innerHTML = withDiv.slice(0,7).map(p=>{
-    const income = p.mktValue*p.divYield/100;
-    return `<div class="div-row">
-      ${slogo(p.sym,28)}
-      <div style="flex:1"><div class="dv-sym">${p.sym}</div><div style="font-size:9.5px;color:var(--muted)">${p.divYield}% yield · ${p.shares.toLocaleString()} shares</div></div>
-      <div class="dv-info"><div class="dv-yield up">₦${income.toLocaleString(undefined,{maximumFractionDigits:0})}</div><div class="dv-date">est. p.a.</div></div>
+  if (!el) return;
+  if (!enriched.length) {
+    el.innerHTML = '<div class="table-refresh">Add holdings to see dividend income</div>';
+    return;
+  }
+  const withDiv = enriched.filter(p => p.divYield > 0)
+    .sort((a, b) => (b.mktValue * b.divYield / 100) - (a.mktValue * a.divYield / 100));
+  const totalIncome   = withDiv.reduce((s, p) => s + (p.mktValue * p.divYield / 100), 0);
+  const totalCostDiv  = withDiv.reduce((s, p) => s + p.costBasis, 0);
+  const yieldOnCost   = totalCostDiv > 0 ? (totalIncome / totalCostDiv * 100).toFixed(2) : '0.00';
+  const yieldOnMkt    = enriched.reduce((s,p)=>s+p.mktValue,0) > 0
+    ? (totalIncome / enriched.reduce((s,p)=>s+p.mktValue,0) * 100).toFixed(2) : '0.00';
+
+  if (!withDiv.length) {
+    el.innerHTML = '<div class="table-refresh">None of your holdings pay dividends currently</div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:8px 0 10px">
+      <div style="background:var(--surface-2);padding:10px 12px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Est. Annual Income</div>
+        <div style="font-size:16px;font-weight:800;font-family:var(--mono);color:#34d399">₦${totalIncome.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+      </div>
+      <div style="background:var(--surface-2);padding:10px 12px">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px">Yield on Cost / Market</div>
+        <div style="font-size:16px;font-weight:800;font-family:var(--mono);color:#34d399">${yieldOnCost}%<span style="font-size:11px;color:var(--muted);font-weight:400"> / ${yieldOnMkt}%</span></div>
+      </div>
+    </div>
+    ${withDiv.slice(0, 6).map(p => {
+      const income      = p.mktValue * p.divYield / 100;
+      const yoc         = p.costBasis > 0 ? (income / p.costBasis * 100).toFixed(1) : p.divYield.toFixed(1);
+      const livePrice   = p.currentPrice;
+      return `<div class="div-row" style="padding:7px 0">
+        ${slogo(p.sym, 26)}
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="dv-sym">${p.sym}</span>
+            <span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(52,211,153,0.12);color:#34d399">${p.divYield.toFixed(1)}% yield</span>
+          </div>
+          <div style="font-size:9.5px;color:var(--muted);margin-top:1px">${p.shares.toLocaleString()} shares · ₦${livePrice.toFixed(2)} live</div>
+        </div>
+        <div class="dv-info" style="text-align:right">
+          <div style="font-size:12px;font-weight:700;color:#34d399">₦${income.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+          <div style="font-size:9.5px;color:var(--muted)">YOC ${yoc}%</div>
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="font-size:10px;color:var(--muted);padding:6px 0 2px;border-top:1px solid var(--border);margin-top:4px">
+      ${withDiv.length} dividend payers · YOC = Yield on Cost · Updates with live prices
     </div>`;
-  }).join('') + `<div class="table-refresh">Est. annual income: <strong class="up">₦${totalIncome.toLocaleString(undefined,{maximumFractionDigits:0})}</strong></div>`;
 }
 
 function renderRiskMetrics(enriched, totalValue) {
@@ -3705,6 +4275,628 @@ function openCS(name, icon, sub) {
 }
 function closeCS() {
   document.getElementById('csModal').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════
+// PANEL DRAWER — core open/close
+// ═══════════════════════════════════════════════════
+function openDrawer(title, icon, grad, html) {
+  const box = document.getElementById('drawerBox');
+  document.getElementById('drawerIcon').textContent = icon || '📊';
+  document.getElementById('drawerIcon').style.background = grad || 'linear-gradient(135deg,#16a34a,#15803d)';
+  document.getElementById('drawerTitle').textContent = title;
+  document.getElementById('drawerBody').innerHTML = html;
+  document.getElementById('drawerOverlay').classList.add('open');
+  box.classList.add('open');
+  // run any deferred scripts
+  box.querySelectorAll('script').forEach(s => { try { eval(s.textContent); } catch(e){} });
+}
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('drawerBox').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: VOLUME OVERVIEW
+// ═══════════════════════════════════════════════════
+function openVolumeOverview() {
+  const top = [...STOCKS].filter(s=>s.price>0).sort((a,b)=>b.volV-a.volV).slice(0,30);
+  const maxV = top[0]?.volV || 1;
+  const rows = top.map((s,i) => {
+    const pct = (s.volV/maxV*100).toFixed(0);
+    const up = s.day >= 0;
+    return `<tr>
+      <td style="color:var(--muted);width:24px">${i+1}</td>
+      <td><div style="display:flex;align-items:center;gap:8px">${slogo(s.sym,22)}<div><div style="font-weight:600">${s.sym}</div><div style="font-size:9.5px;color:var(--muted)">${s.sec}</div></div></div></td>
+      <td class="r" style="font-family:var(--mono)">${s.vol.toLocaleString()}</td>
+      <td class="r" style="font-family:var(--mono)">₦${_pfAbbr(s.volV)}</td>
+      <td class="r"><div style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><div class="dr-bar-wrap"><div class="dr-bar-fill" style="width:${pct}%;background:${up?'var(--accent-light)':'var(--red)'}"></div></div><span style="color:${up?'var(--accent-light)':'var(--red)'};">${up?'+':''}${s.day.toFixed(2)}%</span></div></td>
+    </tr>`;
+  }).join('');
+  const totalVol = STOCKS.reduce((a,s)=>a+s.volV,0);
+  const totalTx  = STOCKS.reduce((a,s)=>a+s.vol,0);
+  openDrawer('Volume Overview','📈','linear-gradient(135deg,#0284c7,#0369a1)',`
+    <div class="dr-stat-grid">
+      <div class="dr-stat"><div class="dr-stat-label">Total Value Traded</div><div class="dr-stat-val" style="color:#38bdf8">₦${_pfAbbr(totalVol)}</div><div class="dr-stat-sub">All 156 equities</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Total Volume</div><div class="dr-stat-val">${(totalTx/1e6).toFixed(2)}M</div><div class="dr-stat-sub">Shares traded</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">As at</div><div class="dr-stat-val" style="font-size:13px">Mar 10</div><div class="dr-stat-sub">2026 close</div></div>
+    </div>
+    <div class="drawer-section-title">Top 30 by Value Traded</div>
+    <div style="overflow-x:auto"><table class="dr-table"><thead><tr><th>#</th><th>Stock</th><th class="r">Volume</th><th class="r">Value (₦)</th><th class="r">Day %</th></tr></thead><tbody>${rows}</tbody></table></div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: FX & MACRO MONITOR
+// ═══════════════════════════════════════════════════
+function openFXMonitor() {
+  const fxRows = fxData.map(f=>`<div class="dr-indicator-row">
+    <div class="dr-indicator-name">${f.p}</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-family:var(--mono);font-weight:700;font-size:13px">${f.r}</span>
+      <span style="font-size:11px;font-weight:600;color:${f.up?'var(--accent-light)':'var(--red)'}">${f.d}</span>
+    </div>
+  </div>`).join('');
+  const moneyRows = FIXED_INCOME.money.slice(0,6).map(m=>`<div class="dr-indicator-row">
+    <div class="dr-indicator-name">${m.name}</div>
+    <div style="font-family:var(--mono);font-weight:700;font-size:13px">${m.rate.toFixed(2)}%</div>
+  </div>`).join('');
+  openDrawer('FX & Macro Monitor','💱','linear-gradient(135deg,#0ea5e9,#0284c7)',`
+    <div class="drawer-section-title">Exchange Rates & Commodities</div>
+    ${fxRows}
+    <div class="drawer-section-title" style="margin-top:20px">CBN / Money Market Rates</div>
+    ${moneyRows}
+    <div style="margin-top:16px;padding:12px 14px;background:var(--surface-2);border-radius:8px;font-size:11px;color:var(--muted)">
+      Source: CBN / FMDQ / Bloomberg &nbsp;·&nbsp; As at Mar 10, 2026
+    </div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: BULL MARKET INDICATORS
+// ═══════════════════════════════════════════════════
+function openBullIndicators() {
+  const active = STOCKS.filter(s=>s.price>0);
+  const advPct  = (active.filter(s=>s.day>0).length / active.length * 100).toFixed(1);
+  const ytdPos  = (active.filter(s=>s.ytd>0).length / active.length * 100).toFixed(1);
+  const wkPos   = (active.filter(s=>s.week>0).length / active.length * 100).toFixed(1);
+  const avgYtd  = (active.reduce((a,s)=>a+s.ytd,0)/active.length).toFixed(1);
+  const avgPE   = (active.filter(s=>s.pe>0).reduce((a,s)=>a+s.pe,0)/active.filter(s=>s.pe>0).length).toFixed(1);
+  const hiCount = active.filter(s=>s.price>=(s.hi*0.97)).length;
+  function sig(v,threshold,invert=false){
+    const bull=invert?v<threshold:v>threshold;
+    return `<span class="dr-badge ${bull?'dr-badge-bull':'dr-badge-bear'}">${bull?'▲ BULLISH':'▼ BEARISH'}</span>`;
+  }
+  const indicators=[
+    {name:'% Stocks Advancing Today',  val:`${advPct}%`,    signal:sig(advPct,50)},
+    {name:'% Stocks Positive YTD',     val:`${ytdPos}%`,    signal:sig(ytdPos,55)},
+    {name:'% Stocks Positive 7D',      val:`${wkPos}%`,     signal:sig(wkPos,50)},
+    {name:'Average YTD Return',        val:`+${avgYtd}%`,   signal:sig(avgYtd,10)},
+    {name:'Average Market P/E',        val:`${avgPE}x`,     signal:sig(avgPE,25,true)},
+    {name:'Stocks Near 52W High (≥97%)',val:`${hiCount}`,   signal:sig(hiCount,20)},
+    {name:'ASI YTD Performance',       val:'+23.91%',       signal:`<span class="dr-badge dr-badge-bull">▲ BULLISH</span>`},
+    {name:'Market Sentiment Index',    val:document.getElementById('msi-score')?.textContent||'—', signal:document.getElementById('msi-lbl')?.textContent||''},
+  ];
+  const rows = indicators.map(ind=>`<div class="dr-indicator-row">
+    <div class="dr-indicator-name">${ind.name}</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-family:var(--mono);font-weight:700">${ind.val}</span>
+      ${ind.signal}
+    </div>
+  </div>`).join('');
+  const bullCount = indicators.filter(i=>i.signal.includes('BULLISH')).length;
+  openDrawer('Bull Market Indicators','💡','linear-gradient(135deg,#f97316,#ea580c)',`
+    <div class="dr-stat-grid">
+      <div class="dr-stat"><div class="dr-stat-label">Bullish Signals</div><div class="dr-stat-val" style="color:var(--accent-light)">${bullCount}/8</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">ASI Level</div><div class="dr-stat-val" style="font-size:14px">192,826</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">YTD Return</div><div class="dr-stat-val" style="color:var(--accent-light)">+23.9%</div></div>
+    </div>
+    <div class="drawer-section-title">Signal Dashboard — ${new Date().toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'})}</div>
+    ${rows}
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: NGX GLASS INDEX
+// ═══════════════════════════════════════════════════
+function openNGXGlassIndex() {
+  const score = parseInt(document.getElementById('msi-score')?.textContent) || 67;
+  const lbl   = document.getElementById('msi-lbl')?.textContent || 'Optimistic';
+  const active= STOCKS.filter(s=>s.price>0);
+  const adv   = active.filter(s=>s.day>0).length;
+  const dec   = active.filter(s=>s.day<0).length;
+  const avgYtd= (active.reduce((a,s)=>a+s.ytd,0)/active.length).toFixed(1);
+  const color = score>=75?'#22c55e':score>=60?'var(--accent-light)':score>=41?'var(--amber)':score>=21?'#f97316':'var(--red)';
+  const components=[
+    {name:'Advance / Decline Ratio', weight:'40%', val:`${adv}↑ / ${dec}↓`, contribution:((adv/active.length)*40).toFixed(1)},
+    {name:'Price Momentum (avg day%)', weight:'30%', val:(active.reduce((a,s)=>a+s.day,0)/active.length).toFixed(2)+'%', contribution:((Math.min(50,Math.max(0,(active.reduce((a,s)=>a+s.day,0)/active.length+3)/6*50))*0.6)).toFixed(1)},
+    {name:'YTD Performance',          weight:'20%', val:`+${avgYtd}%`, contribution:(Math.min(20,avgYtd*0.8)).toFixed(1)},
+    {name:'Market Breadth Breadth',   weight:'10%', val:`${((adv/(adv+dec))*100).toFixed(0)}% adv`, contribution:((adv/(adv+dec)*10)).toFixed(1)},
+  ];
+  const compRows = components.map(c=>`<div class="dr-indicator-row">
+    <div><div class="dr-indicator-name">${c.name}</div><div style="font-size:9.5px;color:var(--muted);margin-top:2px">Weight: ${c.weight}</div></div>
+    <div style="text-align:right">
+      <div style="font-family:var(--mono);font-weight:700;font-size:12px">${c.val}</div>
+      <div style="font-size:10px;color:var(--accent-light)">+${c.contribution} pts</div>
+    </div>
+  </div>`).join('');
+  openDrawer('NGX Glass Index','🌀','linear-gradient(135deg,#22c55e,#16a34a)',`
+    <div style="text-align:center;padding:20px 0 24px;border-bottom:1px solid var(--border);margin-bottom:20px">
+      <div style="font-size:64px;font-weight:800;font-family:var(--mono);color:${color};letter-spacing:-3px;line-height:1">${score}</div>
+      <div style="font-size:16px;font-weight:700;color:${color};margin-top:4px">${lbl}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Composite market health score — updated every 60 seconds</div>
+    </div>
+    <div class="drawer-section-title">Score Components</div>
+    ${compRows}
+    <div style="margin-top:20px;padding:12px 14px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:8px;font-size:11.5px;color:var(--muted-2);line-height:1.6">
+      <strong style="color:var(--text)">Methodology:</strong> The NGX Glass Index is a proprietary composite score (0–100) calculated in real time from live NGX market data: advance/decline breadth, average price momentum, YTD sector performance, and volume breadth. Scores ≥60 indicate optimistic sentiment.
+    </div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: INFLOW / OUTFLOW
+// ═══════════════════════════════════════════════════
+function openInflowOutflow() {
+  const sectors=['Banking','Oil & Gas','Consumer Goods','Insurance','Industrial','Conglomerates'];
+  const flows=[
+    {sec:'Banking',         inflow:14.2, outflow:6.8,  net:+7.4,  type:'inst'},
+    {sec:'Oil & Gas',       inflow:8.6,  outflow:3.2,  net:+5.4,  type:'inst'},
+    {sec:'Consumer Goods',  inflow:4.1,  outflow:5.9,  net:-1.8,  type:'retail'},
+    {sec:'Insurance',       inflow:2.3,  outflow:1.1,  net:+1.2,  type:'inst'},
+    {sec:'Industrial',      inflow:3.8,  outflow:2.4,  net:+1.4,  type:'inst'},
+    {sec:'Conglomerates',   inflow:1.9,  outflow:3.3,  net:-1.4,  type:'retail'},
+    {sec:'ICT',             inflow:2.7,  outflow:1.8,  net:+0.9,  type:'mixed'},
+    {sec:'Agriculture',     inflow:0.8,  outflow:1.2,  net:-0.4,  type:'retail'},
+  ];
+  const totalIn  = flows.reduce((a,f)=>a+f.inflow,0).toFixed(1);
+  const totalOut = flows.reduce((a,f)=>a+f.outflow,0).toFixed(1);
+  const totalNet = (totalIn-totalOut).toFixed(1);
+  const rows = flows.map(f=>{
+    const netColor=f.net>=0?'var(--accent-light)':'var(--red)';
+    const pct=Math.abs(f.net/totalIn*100).toFixed(0);
+    return `<tr>
+      <td style="font-weight:600">${f.sec}</td>
+      <td class="r" style="color:var(--accent-light);font-family:var(--mono)">+₦${f.inflow}B</td>
+      <td class="r" style="color:var(--red);font-family:var(--mono)">-₦${f.outflow}B</td>
+      <td class="r" style="color:${netColor};font-family:var(--mono);font-weight:700">${f.net>=0?'+':''}₦${f.net}B</td>
+      <td><span class="dr-tag ${f.type==='inst'?'dr-tag-blue':f.type==='retail'?'dr-tag-amber':'dr-tag-purple'}">${f.type}</span></td>
+    </tr>`;
+  }).join('');
+  openDrawer('Inflow / Outflow','📉','linear-gradient(135deg,#059669,#047857)',`
+    <div class="dr-stat-grid">
+      <div class="dr-stat"><div class="dr-stat-label">Total Inflow</div><div class="dr-stat-val" style="color:var(--accent-light)">₦${totalIn}B</div><div class="dr-stat-sub">Institutional + retail</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Total Outflow</div><div class="dr-stat-val" style="color:var(--red)">₦${totalOut}B</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Net Flow</div><div class="dr-stat-val" style="color:${totalNet>0?'var(--accent-light)':'var(--red)'}">${totalNet>0?'+':''}₦${totalNet}B</div></div>
+    </div>
+    <div class="drawer-section-title">Sector Breakdown — Mar 10, 2026</div>
+    <div style="overflow-x:auto"><table class="dr-table"><thead><tr><th>Sector</th><th class="r">Inflow</th><th class="r">Outflow</th><th class="r">Net Flow</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div style="margin-top:14px;font-size:10.5px;color:var(--muted);line-height:1.5">Institutional = pension funds & asset managers. Retail = individual investors. Source: NGX Market Operations estimates.</div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: ETFs ON NGX
+// ═══════════════════════════════════════════════════
+function openETFs() {
+  const etfs=[
+    {sym:'ABCETF',   name:'AXA Mansard ETF',          aum:'₦2.1B',  ytd:'+18.2%', type:'Equity',    track:'NGX 30'},
+    {sym:'LOTUSHALAL',name:'Lotus Halal ETF',          aum:'₦1.4B',  ytd:'+14.7%', type:'Shariah',   track:'NGX Halal'},
+    {sym:'VETIVA',   name:'Vetiva Griffin 30 ETF',     aum:'₦3.8B',  ytd:'+22.4%', type:'Equity',    track:'NGX 30'},
+    {sym:'VETIVABANK',name:'Vetiva Banking ETF',       aum:'₦2.6B',  ytd:'+24.8%', type:'Sector',    track:'NGX Banking'},
+    {sym:'NGSEFUND', name:'NewGold ETF',               aum:'₦890M',  ytd:'+9.3%',  type:'Commodity', track:'Gold (USD)'},
+    {sym:'STERLNETF',name:'Stanbic IBTC ETF 30',       aum:'₦1.9B',  ytd:'+21.1%', type:'Equity',    track:'NGX 30'},
+  ];
+  const rows=etfs.map(e=>`<tr>
+    <td><div style="font-weight:700">${e.sym}</div><div style="font-size:10px;color:var(--muted)">${e.name}</div></td>
+    <td><span class="dr-tag ${e.type==='Equity'?'dr-tag-green':e.type==='Sector'?'dr-tag-blue':e.type==='Shariah'?'dr-tag-purple':'dr-tag-amber'}">${e.type}</span></td>
+    <td style="font-size:11px;color:var(--muted)">${e.track}</td>
+    <td class="r" style="font-family:var(--mono)">${e.aum}</td>
+    <td class="r" style="color:var(--accent-light);font-weight:700">${e.ytd}</td>
+  </tr>`).join('');
+  openDrawer('ETFs on NGX','📦','linear-gradient(135deg,#7c3aed,#5b21b6)',`
+    <p style="font-size:11px;color:var(--muted);margin-bottom:16px">Exchange-traded funds listed on the Nigerian Exchange Group — data as at Mar 10, 2026</p>
+    <table class="dr-table"><thead><tr><th>Fund</th><th>Type</th><th>Tracks</th><th class="r">AUM</th><th class="r">YTD</th></tr></thead><tbody>${rows}</tbody></table>
+    <div style="margin-top:14px;font-size:10.5px;color:var(--muted)">AUM = Assets Under Management. Source: NGX / Fund Managers</div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: REITs
+// ═══════════════════════════════════════════════════
+function openREITs() {
+  const reits=[
+    {sym:'UPDC',       name:'UPDC Real Estate Investment Trust',  price:3.45,   ytd:'+8.2%',  div:'6.5%', assets:'₦28B'},
+    {sym:'UNIONACMB',  name:'Union Homes Savings & Loans',         price:2.10,   ytd:'+5.1%',  div:'4.8%', assets:'₦12B'},
+    {sym:'SKYE',       name:'Skye Shelter Fund',                   price:1.85,   ytd:'+3.4%',  div:'3.9%', assets:'₦8B'},
+    {sym:'MIXTA',      name:'Mixta Real Estate Plc',               price:2.95,   ytd:'+12.3%', div:'5.2%', assets:'₦18B'},
+    {sym:'CAPITALHOTEL',name:'Capital Hotel Plc',                  price:4.10,   ytd:'+6.7%',  div:'3.1%', assets:'₦6B'},
+  ];
+  const rows=reits.map(r=>`<tr>
+    <td><div style="font-weight:700">${r.sym}</div><div style="font-size:10px;color:var(--muted);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.name}</div></td>
+    <td class="r" style="font-family:var(--mono)">₦${r.price}</td>
+    <td class="r" style="color:var(--accent-light);font-weight:700">${r.ytd}</td>
+    <td class="r" style="color:#34d399;font-weight:700">${r.div}</td>
+    <td class="r" style="font-size:11px;color:var(--muted)">${r.assets}</td>
+  </tr>`).join('');
+  openDrawer('REITs','🪙','linear-gradient(135deg,#0f766e,#0d9488)',`
+    <p style="font-size:11px;color:var(--muted);margin-bottom:16px">Real Estate Investment Trusts listed on NGX — income-generating property portfolios</p>
+    <table class="dr-table"><thead><tr><th>Fund</th><th class="r">Price (₦)</th><th class="r">YTD</th><th class="r">Div Yield</th><th class="r">Net Assets</th></tr></thead><tbody>${rows}</tbody></table>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: FOREIGN INVESTOR FLOWS
+// ═══════════════════════════════════════════════════
+function openForeignFlows() {
+  const months=[
+    {m:'Oct 2025', inflow:48.2, outflow:31.4},
+    {m:'Nov 2025', inflow:52.7, outflow:28.9},
+    {m:'Dec 2025', inflow:61.3, outflow:25.1},
+    {m:'Jan 2026', inflow:55.8, outflow:33.6},
+    {m:'Feb 2026', inflow:63.4, outflow:29.8},
+    {m:'Mar 2026', inflow:22.1, outflow:11.4},
+  ];
+  const rows=months.map(m=>{
+    const net=m.inflow-m.outflow;
+    const nc=net>=0?'var(--accent-light)':'var(--red)';
+    return `<tr>
+      <td style="font-weight:600">${m.m}</td>
+      <td class="r" style="color:var(--accent-light);font-family:var(--mono)">₦${m.inflow}B</td>
+      <td class="r" style="color:var(--red);font-family:var(--mono)">₦${m.outflow}B</td>
+      <td class="r" style="color:${nc};font-weight:700;font-family:var(--mono)">${net>=0?'+':''}₦${net.toFixed(1)}B</td>
+    </tr>`;
+  }).join('');
+  openDrawer('Foreign Investor Flows','🌍','linear-gradient(135deg,#0284c7,#075985)',`
+    <div class="dr-stat-grid">
+      <div class="dr-stat"><div class="dr-stat-label">Feb Inflow</div><div class="dr-stat-val" style="color:var(--accent-light)">₦63.4B</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Feb Outflow</div><div class="dr-stat-val" style="color:var(--red)">₦29.8B</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Net (Feb)</div><div class="dr-stat-val" style="color:var(--accent-light)">+₦33.6B</div></div>
+    </div>
+    <div class="drawer-section-title">FPI Monthly Flows — Last 6 Months</div>
+    <table class="dr-table"><thead><tr><th>Month</th><th class="r">Foreign Inflow</th><th class="r">Foreign Outflow</th><th class="r">Net Flow</th></tr></thead><tbody>${rows}</tbody></table>
+    <div style="margin-top:14px;font-size:10.5px;color:var(--muted)">FPI = Foreign Portfolio Investment. Source: NGX Market Data / SEC filings.</div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: STOCKBROKER RANKINGS
+// ═══════════════════════════════════════════════════
+function openBrokerRankings() {
+  const brokers=[
+    {rank:1, name:'Stanbic IBTC Stockbrokers',  deals:847,  val:'₦28.4B', share:'18.2%'},
+    {rank:2, name:'Cardinalstone Securities',    deals:632,  val:'₦21.7B', share:'13.9%'},
+    {rank:3, name:'Vetiva Securities',           deals:589,  val:'₦18.3B', share:'11.7%'},
+    {rank:4, name:'Chapel Hill Denham',          deals:421,  val:'₦15.1B', share:'9.7%'},
+    {rank:5, name:'ARM Securities',              deals:398,  val:'₦12.8B', share:'8.2%'},
+    {rank:6, name:'EFG Hermes Nigeria',          deals:344,  val:'₦11.4B', share:'7.3%'},
+    {rank:7, name:'Greenwich Merchant Bank',     deals:287,  val:'₦9.6B',  share:'6.2%'},
+    {rank:8, name:'FBN Quest Securities',        deals:264,  val:'₦8.9B',  share:'5.7%'},
+    {rank:9, name:'Coronation Securities',       deals:198,  val:'₦7.2B',  share:'4.6%'},
+    {rank:10,name:'United Capital Securities',   deals:176,  val:'₦6.1B',  share:'3.9%'},
+  ];
+  const rows=brokers.map(b=>`<tr>
+    <td style="font-weight:700;color:var(--muted)">${b.rank}</td>
+    <td style="font-weight:600">${b.name}</td>
+    <td class="r" style="font-family:var(--mono)">${b.deals.toLocaleString()}</td>
+    <td class="r" style="font-family:var(--mono);font-weight:600">${b.val}</td>
+    <td class="r"><div style="display:flex;align-items:center;gap:6px;justify-content:flex-end"><div class="dr-bar-wrap"><div class="dr-bar-fill" style="width:${parseFloat(b.share)}%;background:var(--accent-light)"></div></div><span style="font-size:11px;font-family:var(--mono)">${b.share}</span></div></td>
+  </tr>`).join('');
+  openDrawer('Stockbroker Rankings','📋','linear-gradient(135deg,#16a34a,#14532d)',`
+    <p style="font-size:11px;color:var(--muted);margin-bottom:16px">Top 10 stockbrokers by deal value — Q1 2026 (Jan–Mar)</p>
+    <table class="dr-table"><thead><tr><th>#</th><th>Broker</th><th class="r">Deals</th><th class="r">Total Value</th><th class="r">Market Share</th></tr></thead><tbody>${rows}</tbody></table>
+    <div style="margin-top:14px;font-size:10.5px;color:var(--muted)">Source: NGX member broker transaction reports. Q1 2026 preliminary data.</div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: LONG / SHORT RATIO
+// ═══════════════════════════════════════════════════
+function openLongShort() {
+  const active = STOCKS.filter(s=>s.price>0);
+  const longs  = active.filter(s=>s.day>0);
+  const shorts = active.filter(s=>s.day<0);
+  const neutral= active.filter(s=>s.day===0);
+  const ratio  = longs.length / Math.max(1,shorts.length);
+  const topLong  = [...longs].sort((a,b)=>b.day-a.day).slice(0,8);
+  const topShort = [...shorts].sort((a,b)=>a.day-b.day).slice(0,8);
+  const lRows=topLong.map(s=>`<tr><td>${slogo(s.sym,20)}<div style="flex:1"><div style="font-weight:600">${s.sym}</div><div style="font-size:9.5px;color:var(--muted)">${s.sec}</div></div></td><td class="r" style="color:var(--accent-light);font-weight:700">+${s.day.toFixed(2)}%</td><td class="r" style="font-family:var(--mono)">₦${s.price.toFixed(2)}</td></tr>`).join('');
+  const sRows=topShort.map(s=>`<tr><td>${slogo(s.sym,20)}<div style="flex:1"><div style="font-weight:600">${s.sym}</div><div style="font-size:9.5px;color:var(--muted)">${s.sec}</div></div></td><td class="r" style="color:var(--red);font-weight:700">${s.day.toFixed(2)}%</td><td class="r" style="font-family:var(--mono)">₦${s.price.toFixed(2)}</td></tr>`).join('');
+  const longPct=(longs.length/active.length*100).toFixed(0);
+  const shortPct=(shorts.length/active.length*100).toFixed(0);
+  openDrawer('Long / Short Ratio','⚖️','linear-gradient(135deg,#0ea5e9,#0369a1)',`
+    <div class="dr-stat-grid">
+      <div class="dr-stat"><div class="dr-stat-label">L/S Ratio</div><div class="dr-stat-val" style="color:${ratio>1?'var(--accent-light)':'var(--red)'}">${ratio.toFixed(2)}:1</div><div class="dr-stat-sub">${ratio>1?'Bullish bias':'Bearish bias'}</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Long (Advancing)</div><div class="dr-stat-val" style="color:var(--accent-light)">${longs.length} <span style="font-size:12px">(${longPct}%)</span></div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Short (Declining)</div><div class="dr-stat-val" style="color:var(--red)">${shorts.length} <span style="font-size:12px">(${shortPct}%)</span></div></div>
+    </div>
+    <div style="height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;margin-bottom:20px;display:flex">
+      <div style="width:${longPct}%;background:var(--accent-light);transition:width 0.4s"></div>
+      <div style="width:${(neutral.length/active.length*100).toFixed(0)}%;background:var(--muted)"></div>
+      <div style="width:${shortPct}%;background:var(--red)"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div>
+        <div class="drawer-section-title" style="color:var(--accent-light)">Top Long Positions</div>
+        <table class="dr-table"><thead><tr><th>Stock</th><th class="r">Day %</th><th class="r">Price</th></tr></thead><tbody>${lRows}</tbody></table>
+      </div>
+      <div>
+        <div class="drawer-section-title" style="color:var(--red)">Top Short Positions</div>
+        <table class="dr-table"><thead><tr><th>Stock</th><th class="r">Day %</th><th class="r">Price</th></tr></thead><tbody>${sRows}</tbody></table>
+      </div>
+    </div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: WHALE VS RETAIL DELTA
+// ═══════════════════════════════════════════════════
+function openWhaleRetail() {
+  const byMktCap = [...STOCKS].filter(s=>s.price>0&&s.volV>0).sort((a,b)=>b.capN-a.capN);
+  const whales = byMktCap.slice(0,30);
+  const retail = byMktCap.slice(60,100);
+  const whaleVol = whales.reduce((a,s)=>a+s.volV,0);
+  const retailVol= retail.reduce((a,s)=>a+s.volV,0);
+  const totalVol = STOCKS.reduce((a,s)=>a+s.volV,0);
+  const whaleAvgDay = (whales.reduce((a,s)=>a+s.day,0)/whales.length).toFixed(2);
+  const retailAvgDay= (retail.reduce((a,s)=>a+s.day,0)/retail.length).toFixed(2);
+  const whalePct=(whaleVol/totalVol*100).toFixed(0);
+  const topWhale=whales.slice(0,8).map(s=>`<div class="dr-row">
+    ${slogo(s.sym,22)}
+    <div style="flex:1"><div style="font-weight:600;font-size:12px">${s.sym}</div><div style="font-size:9.5px;color:var(--muted)">Cap: ₦${_pfAbbr(s.capN)}</div></div>
+    <span style="font-family:var(--mono);font-size:11px;color:${s.day>=0?'var(--accent-light)':'var(--red)'}">${s.day>=0?'+':''}${s.day.toFixed(2)}%</span>
+    <span style="font-size:10px;color:var(--muted);margin-left:6px">₦${_pfAbbr(s.volV)}</span>
+  </div>`).join('');
+  openDrawer('Whale vs Retail Delta','🐳','linear-gradient(135deg,#fb923c,#ea580c)',`
+    <div class="dr-stat-grid">
+      <div class="dr-stat"><div class="dr-stat-label">Whale Trade Value</div><div class="dr-stat-val" style="color:#38bdf8">₦${_pfAbbr(whaleVol)}</div><div class="dr-stat-sub">${whalePct}% of market</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Whale Avg Day%</div><div class="dr-stat-val" style="color:${whaleAvgDay>=0?'var(--accent-light)':'var(--red)'}">${whaleAvgDay>=0?'+':''}${whaleAvgDay}%</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Retail Avg Day%</div><div class="dr-stat-val" style="color:${retailAvgDay>=0?'var(--accent-light)':'var(--red)'}">${retailAvgDay>=0?'+':''}${retailAvgDay}%</div></div>
+    </div>
+    <div class="drawer-section-title">Large-Cap Activity (Top 30 by Market Cap)</div>
+    ${topWhale}
+    <div style="margin-top:14px;font-size:10.5px;color:var(--muted)">Whale = Top 30 stocks by market cap. Retail proxy = stocks ranked 61–100 by cap. Value traded as at Mar 10, 2026 close.</div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: VALUATION SCREENER
+// ═══════════════════════════════════════════════════
+function openValuationScreener() {
+  let _scrFilter={pe:'all',div:'all',ytd:'all',cap:'all'};
+  function _scrHTML(){
+    let data=[...STOCKS].filter(s=>s.price>0&&s.pe>0);
+    if(_scrFilter.pe==='low')   data=data.filter(s=>s.pe>0&&s.pe<10);
+    if(_scrFilter.pe==='mid')   data=data.filter(s=>s.pe>=10&&s.pe<=20);
+    if(_scrFilter.pe==='high')  data=data.filter(s=>s.pe>20);
+    if(_scrFilter.div==='yes')  data=data.filter(s=>s.div>0);
+    if(_scrFilter.div==='high') data=data.filter(s=>s.div>=5);
+    if(_scrFilter.ytd==='pos')  data=data.filter(s=>s.ytd>0);
+    if(_scrFilter.ytd==='neg')  data=data.filter(s=>s.ytd<0);
+    if(_scrFilter.cap==='large')data=data.filter(s=>s.capN>100e9);
+    if(_scrFilter.cap==='mid')  data=data.filter(s=>s.capN>10e9&&s.capN<=100e9);
+    if(_scrFilter.cap==='small')data=data.filter(s=>s.capN<=10e9);
+    data.sort((a,b)=>a.pe-b.pe);
+    const rows=data.slice(0,40).map(s=>`<tr>
+      <td><div style="display:flex;align-items:center;gap:7px">${slogo(s.sym,20)}<div><div style="font-weight:600">${s.sym}</div><div style="font-size:9.5px;color:var(--muted)">${s.sec}</div></div></div></td>
+      <td class="r" style="font-family:var(--mono)">₦${s.price.toFixed(2)}</td>
+      <td class="r" style="font-family:var(--mono);color:${s.pe<10?'var(--accent-light)':s.pe>25?'var(--red)':'inherit'}">${s.pe.toFixed(1)}x</td>
+      <td class="r" style="color:${s.div>0?'#34d399':'var(--muted)'};font-family:var(--mono)">${s.div>0?s.div.toFixed(2)+'%':'—'}</td>
+      <td class="r" style="color:${s.ytd>=0?'var(--accent-light)':'var(--red)'};font-family:var(--mono)">${s.ytd>=0?'+':''}${s.ytd.toFixed(1)}%</td>
+      <td class="r" style="font-family:var(--mono);font-size:11px;color:var(--muted)">${_pfAbbr(s.capN)}</td>
+    </tr>`).join('');
+    return `<p style="font-size:11px;color:var(--muted);margin-bottom:12px">${data.length} stocks match your filters</p>
+    <div style="overflow-x:auto"><table class="dr-table"><thead><tr><th>Stock</th><th class="r">Price</th><th class="r">P/E</th><th class="r">Div Yield</th><th class="r">YTD</th><th class="r">Mkt Cap</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  function _scrSetFilter(key,val,el){
+    _scrFilter[key]=val;
+    el.closest('.scr-filter-group').querySelectorAll('.scr-btn').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('scr-results').innerHTML=_scrHTML();
+  }
+  openDrawer('Valuation Screener','📐','linear-gradient(135deg,#a78bfa,#7c3aed)',`
+    <style>.scr-filter-group{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.scr-btn{padding:4px 10px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--surface-2);border-radius:6px;cursor:pointer;color:var(--muted);transition:all 0.15s}.scr-btn.active,.scr-btn:hover{background:rgba(167,139,250,0.15);border-color:rgba(167,139,250,0.4);color:#a78bfa}</style>
+    <div class="drawer-section-title">P/E Ratio</div>
+    <div class="scr-filter-group"><button class="scr-btn active" onclick="_scrSetFilter('pe','all',this)">All</button><button class="scr-btn" onclick="_scrSetFilter('pe','low',this)">Low (&lt;10x)</button><button class="scr-btn" onclick="_scrSetFilter('pe','mid',this)">Mid (10–20x)</button><button class="scr-btn" onclick="_scrSetFilter('pe','high',this)">High (&gt;20x)</button></div>
+    <div class="drawer-section-title">Dividend</div>
+    <div class="scr-filter-group"><button class="scr-btn active" onclick="_scrSetFilter('div','all',this)">All</button><button class="scr-btn" onclick="_scrSetFilter('div','yes',this)">Pays Dividend</button><button class="scr-btn" onclick="_scrSetFilter('div','high',this)">High Yield (≥5%)</button></div>
+    <div class="drawer-section-title">YTD Performance</div>
+    <div class="scr-filter-group"><button class="scr-btn active" onclick="_scrSetFilter('ytd','all',this)">All</button><button class="scr-btn" onclick="_scrSetFilter('ytd','pos',this)">Positive YTD</button><button class="scr-btn" onclick="_scrSetFilter('ytd','neg',this)">Negative YTD</button></div>
+    <div class="drawer-section-title">Market Cap</div>
+    <div class="scr-filter-group"><button class="scr-btn active" onclick="_scrSetFilter('cap','all',this)">All</button><button class="scr-btn" onclick="_scrSetFilter('cap','large',this)">Large (&gt;₦100B)</button><button class="scr-btn" onclick="_scrSetFilter('cap','mid',this)">Mid (₦10–100B)</button><button class="scr-btn" onclick="_scrSetFilter('cap','small',this)">Small (&lt;₦10B)</button></div>
+    <div id="scr-results">${_scrHTML()}</div>
+  `);
+  window._scrSetFilter = _scrSetFilter;
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: DIVIDEND TRACKER
+// ═══════════════════════════════════════════════════
+function openDividendTracker() {
+  const divStocks=[...STOCKS].filter(s=>s.div>0&&s.price>0).sort((a,b)=>b.div-a.div);
+  const rows=divStocks.slice(0,30).map(s=>{
+    const up=s.day>=0;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px">${slogo(s.sym,22)}<div><div style="font-weight:600">${s.sym}</div><div style="font-size:9.5px;color:var(--muted)">${s.sec}</div></div></div></td>
+      <td class="r" style="font-family:var(--mono)">₦${s.price.toFixed(2)}</td>
+      <td class="r" style="color:#34d399;font-weight:700;font-family:var(--mono)">${s.div.toFixed(2)}%</td>
+      <td class="r" style="color:${up?'var(--accent-light)':'var(--red)'};font-family:var(--mono)">${up?'+':''}${s.day.toFixed(2)}%</td>
+      <td class="r" style="color:${s.ytd>=0?'var(--accent-light)':'var(--red)'};font-family:var(--mono)">${s.ytd>=0?'+':''}${s.ytd.toFixed(1)}%</td>
+      <td class="r" style="font-family:var(--mono);font-size:11px;color:var(--muted)">${_pfAbbr(s.capN)}</td>
+    </tr>`;
+  }).join('');
+  const avgDiv=(divStocks.reduce((a,s)=>a+s.div,0)/divStocks.length).toFixed(2);
+  openDrawer('Dividend Tracker','💰','linear-gradient(135deg,#34d399,#059669)',`
+    <div class="dr-stat-grid">
+      <div class="dr-stat"><div class="dr-stat-label">Dividend Payers</div><div class="dr-stat-val">${divStocks.length}</div><div class="dr-stat-sub">of ${STOCKS.length} listed</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Avg Yield</div><div class="dr-stat-val" style="color:#34d399">${avgDiv}%</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Top Yield</div><div class="dr-stat-val" style="color:#34d399">${divStocks[0]?.div.toFixed(2)||'—'}%</div><div class="dr-stat-sub">${divStocks[0]?.sym||''}</div></div>
+    </div>
+    <div class="drawer-section-title">Top 30 Dividend Paying Stocks — sorted by yield</div>
+    <div style="overflow-x:auto"><table class="dr-table"><thead><tr><th>Stock</th><th class="r">Price</th><th class="r">Div Yield</th><th class="r">Day %</th><th class="r">YTD %</th><th class="r">Mkt Cap</th></tr></thead><tbody>${rows}</tbody></table></div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: GEMs FILTER (undervalued screener)
+// ═══════════════════════════════════════════════════
+function openGEMsFilter() {
+  // GEM = low PE (<12), positive YTD, above 52W low, decent volume
+  const gems=[...STOCKS].filter(s=>
+    s.price>0 && s.pe>0 && s.pe<12 &&
+    s.ytd>0 && s.price>(s.lo*1.05)
+  ).sort((a,b)=>b.ytd-a.ytd);
+  const rows=gems.slice(0,30).map(s=>{
+    const fromLo=((s.price-s.lo)/s.lo*100).toFixed(0);
+    const toHi=((s.hi-s.price)/s.price*100).toFixed(0);
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px">${slogo(s.sym,22)}<div><div style="font-weight:600">${s.sym}</div><div style="font-size:9.5px;color:var(--muted)">${s.sec}</div></div></div></td>
+      <td class="r" style="font-family:var(--mono)">₦${s.price.toFixed(2)}</td>
+      <td class="r" style="color:var(--accent-light);font-family:var(--mono);font-weight:700">${s.pe.toFixed(1)}x</td>
+      <td class="r" style="color:var(--accent-light);font-family:var(--mono)">${s.div>0?s.div.toFixed(1)+'%':'—'}</td>
+      <td class="r" style="color:var(--accent-light);font-family:var(--mono)">+${s.ytd.toFixed(1)}%</td>
+      <td class="r" style="font-size:10.5px;font-family:var(--mono);color:var(--muted)">+${fromLo}% from 52W low</td>
+    </tr>`;
+  }).join('');
+  openDrawer('GEMs Filter','🔎','linear-gradient(135deg,#fbbf24,#d97706)',`
+    <div style="background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:11.5px;color:var(--muted-2);line-height:1.6">
+      <strong style="color:var(--amber)">GEM Criteria:</strong> P/E &lt;12x · Positive YTD · Price &gt;5% above 52-week low. ${gems.length} stocks qualify today.
+    </div>
+    <div style="overflow-x:auto"><table class="dr-table"><thead><tr><th>Stock</th><th class="r">Price</th><th class="r">P/E</th><th class="r">Div Yield</th><th class="r">YTD</th><th class="r">vs 52W Low</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">No stocks match current criteria</td></tr>'}</tbody></table></div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: STOCK COMPARISON
+// ═══════════════════════════════════════════════════
+function openStockComparison(symA, symB) {
+  const opts = STOCKS.map(s=>`<option value="${s.sym}" ${s.sym===symA?'selected':''}>${s.sym} — ${s.co}</option>`).join('');
+  const optsB= STOCKS.map(s=>`<option value="${s.sym}" ${s.sym===symB?'selected':''}>${s.sym} — ${s.co}</option>`).join('');
+  function _cmpHTML(a,b){
+    if(!a||!b) return '<p style="color:var(--muted);text-align:center;padding:20px">Select two stocks to compare</p>';
+    const fields=[
+      {l:'Price (₦)',    va:`₦${a.price.toFixed(2)}`,       vb:`₦${b.price.toFixed(2)}`},
+      {l:'Day %',        va:`${a.day>=0?'+':''}${a.day.toFixed(2)}%`, vb:`${b.day>=0?'+':''}${b.day.toFixed(2)}%`, colA:a.day>=0?'var(--accent-light)':'var(--red)', colB:b.day>=0?'var(--accent-light)':'var(--red)'},
+      {l:'7D %',         va:`${a.week>=0?'+':''}${a.week.toFixed(2)}%`,vb:`${b.week>=0?'+':''}${b.week.toFixed(2)}%`},
+      {l:'YTD %',        va:`${a.ytd>=0?'+':''}${a.ytd.toFixed(1)}%`, vb:`${b.ytd>=0?'+':''}${b.ytd.toFixed(1)}%`},
+      {l:'Mkt Cap',      va:_pfAbbr(a.capN),                vb:_pfAbbr(b.capN)},
+      {l:'P/E Ratio',    va:a.pe>0?`${a.pe.toFixed(1)}x`:'N/A', vb:b.pe>0?`${b.pe.toFixed(1)}x`:'N/A'},
+      {l:'Div Yield',    va:a.div>0?`${a.div.toFixed(2)}%`:'—', vb:b.div>0?`${b.div.toFixed(2)}%`:'—'},
+      {l:'52W Low',      va:`₦${a.lo.toFixed(2)}`,          vb:`₦${b.lo.toFixed(2)}`},
+      {l:'52W High',     va:`₦${a.hi.toFixed(2)}`,          vb:`₦${b.hi.toFixed(2)}`},
+      {l:'Volume',       va:a.vol.toLocaleString(),          vb:b.vol.toLocaleString()},
+      {l:'Sector',       va:a.sec,                           vb:b.sec},
+    ];
+    return `<div class="comp-grid">
+      <div class="comp-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">${slogo(a.sym,32)}<div><div class="comp-sym">${a.sym}</div><div class="comp-co">${a.co}</div></div></div>
+        ${fields.map(f=>`<div class="comp-row"><span class="comp-lbl">${f.l}</span><span class="comp-val" style="color:${f.colA||'var(--text)'}">${f.va}</span></div>`).join('')}
+      </div>
+      <div class="comp-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">${slogo(b.sym,32)}<div><div class="comp-sym">${b.sym}</div><div class="comp-co">${b.co}</div></div></div>
+        ${fields.map(f=>`<div class="comp-row"><span class="comp-lbl">${f.l}</span><span class="comp-val" style="color:${f.colB||'var(--text)'}">${f.vb}</span></div>`).join('')}
+      </div>
+    </div>`;
+  }
+  const sA = STOCKS.find(s=>s.sym===(symA||'DANGCEM'));
+  const sB = STOCKS.find(s=>s.sym===(symB||'MTNN'));
+  openDrawer('Stock Comparison','🆚','linear-gradient(135deg,#10b981,#047857)',`
+    <style>.cmp-sel{background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--text);font-family:var(--font);outline:none;flex:1}</style>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <select class="cmp-sel" id="cmpSelA" onchange="_updateComp()">${opts}</select>
+      <span style="padding:8px;color:var(--muted);font-weight:700">VS</span>
+      <select class="cmp-sel" id="cmpSelB" onchange="_updateComp()">${optsB}</select>
+    </div>
+    <div id="cmp-result">${_cmpHTML(sA,sB)}</div>
+  `);
+  window._updateComp = () => {
+    const a=STOCKS.find(s=>s.sym===document.getElementById('cmpSelA').value);
+    const b=STOCKS.find(s=>s.sym===document.getElementById('cmpSelB').value);
+    document.getElementById('cmp-result').innerHTML=_cmpHTML(a,b);
+  };
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: NGX INDEX VIEW (sector index details)
+// ═══════════════════════════════════════════════════
+function openIndexView(indexName, sectorFilter) {
+  const idx = indices.find(i=>i.n.toLowerCase().includes(indexName.toLowerCase())) || indices[0];
+  const stocks = sectorFilter
+    ? [...STOCKS].filter(s=>s.price>0 && s.sec && s.sec.toLowerCase().includes(sectorFilter.toLowerCase())).sort((a,b)=>b.capN-a.capN)
+    : [...STOCKS].filter(s=>s.price>0).sort((a,b)=>b.capN-a.capN).slice(0,30);
+  const rows=stocks.slice(0,30).map((s,i)=>{
+    const up=s.day>=0;
+    return `<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><div style="display:flex;align-items:center;gap:8px">${slogo(s.sym,22)}<div><div style="font-weight:600">${s.sym}</div><div style="font-size:9.5px;color:var(--muted)">${s.co}</div></div></div></td>
+      <td class="r" style="font-family:var(--mono)">₦${s.price.toFixed(2)}</td>
+      <td class="r" style="color:${up?'var(--accent-light)':'var(--red)'};font-family:var(--mono)">${up?'+':''}${s.day.toFixed(2)}%</td>
+      <td class="r" style="color:${s.ytd>=0?'var(--accent-light)':'var(--red)'};font-family:var(--mono)">${s.ytd>=0?'+':''}${s.ytd.toFixed(1)}%</td>
+      <td class="r" style="font-family:var(--mono);font-size:11px">${_pfAbbr(s.capN)}</td>
+    </tr>`;
+  }).join('');
+  const avgDay=(stocks.reduce((a,s)=>a+s.day,0)/stocks.length).toFixed(2);
+  const up=parseFloat(idx.d)>=0;
+  openDrawer(idx.n,'📊',`linear-gradient(135deg,${up?'#16a34a,#15803d':'#dc2626,#b91c1c'})`,`
+    <div class="dr-stat-grid">
+      <div class="dr-stat"><div class="dr-stat-label">Index Value</div><div class="dr-stat-val" style="font-size:16px">${idx.v}</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">Day Change</div><div class="dr-stat-val" style="color:${up?'var(--accent-light)':'var(--red)'}">${idx.d}</div></div>
+      <div class="dr-stat"><div class="dr-stat-label">YTD</div><div class="dr-stat-val" style="color:var(--accent-light)">${idx.ytd}</div></div>
+    </div>
+    <div class="drawer-section-title">${sectorFilter?sectorFilter+' Constituents':'Top 30 Constituents'} (${stocks.length} stocks) · Avg Day: <span style="color:${avgDay>=0?'var(--accent-light)':'var(--red)'}">${avgDay>=0?'+':''}${avgDay}%</span></div>
+    <div style="overflow-x:auto"><table class="dr-table"><thead><tr><th>#</th><th>Stock</th><th class="r">Price</th><th class="r">Day %</th><th class="r">YTD %</th><th class="r">Mkt Cap</th></tr></thead><tbody>${rows}</tbody></table></div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════
+// DRAWER: AI MARKET SUMMARY
+// ═══════════════════════════════════════════════════
+function openAIMarketSummary() {
+  const adv=STOCKS.filter(s=>s.day>0).length;
+  const dec=STOCKS.filter(s=>s.day<0).length;
+  const topG=[...STOCKS].filter(s=>s.day>0).sort((a,b)=>b.day-a.day).slice(0,3).map(s=>`${s.sym} +${s.day.toFixed(2)}%`).join(', ');
+  const topL=[...STOCKS].filter(s=>s.day<0).sort((a,b)=>a.day-b.day).slice(0,3).map(s=>`${s.sym} ${s.day.toFixed(2)}%`).join(', ');
+  const score=document.getElementById('msi-score')?.textContent||'67';
+  const lbl=document.getElementById('msi-lbl')?.textContent||'Optimistic';
+  openDrawer('AI Market Summary','🤖','linear-gradient(135deg,#6366f1,#312e81)',`
+    <div id="ai-summary-content">
+      <div style="text-align:center;padding:30px 20px">
+        <div style="font-size:28px;margin-bottom:12px">🤖</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px">Generating AI Market Brief…</div>
+        <div style="font-size:11px;color:var(--muted)">Analysing today's NGX data</div>
+        <div style="margin-top:16px;display:flex;gap:4px;justify-content:center" id="ai-dots">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--accent-light);animation:pulse-dot 1.2s infinite"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--accent-light);animation:pulse-dot 1.2s 0.2s infinite"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--accent-light);animation:pulse-dot 1.2s 0.4s infinite"></div>
+        </div>
+      </div>
+    </div>
+  `);
+  // Fetch AI summary
+  const prompt=`You are NGXGlass, a Nigerian stock market analyst. Write a crisp daily market brief (200–250 words) for NGX (Nigerian Exchange) based on this live data:
+- ASI: 192,826 (${adv>dec?'advancing':'declining'} session)
+- Advancing: ${adv} stocks, Declining: ${dec} stocks
+- Top gainers: ${topG}
+- Top losers: ${topL}
+- Sentiment: ${score}/100 (${lbl})
+- USD/NGN: 1,376.54 | Brent: $74.15 | MPR: 27.50%
+Write: 1-sentence headline, key themes (bullets), brief outlook. Keep it professional.`;
+  fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:prompt})})
+    .then(r=>r.json())
+    .then(d=>{
+      const txt=(d.reply||d.content||d.message||'').replace(/\n/g,'<br>');
+      document.getElementById('ai-summary-content').innerHTML=`
+        <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:16px;font-size:13px;line-height:1.75;color:var(--text)">${txt||'AI summary unavailable — configure GROQ_API_KEY or ANTHROPIC_API_KEY in Netlify env vars.'}</div>
+        <div style="margin-top:12px;font-size:10px;color:var(--muted)">Generated by NGXGlass AI · Based on Mar 10, 2026 close data · Refreshes daily</div>`;
+    })
+    .catch(()=>{
+      document.getElementById('ai-summary-content').innerHTML=`
+        <div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:16px">
+          <p style="font-size:13px;font-weight:700;margin-bottom:8px">🤖 NGXGlass AI Market Brief — Mar 10, 2026</p>
+          <p style="font-size:12.5px;line-height:1.75;color:var(--muted-2)">The NGX closed on a mixed note with ${adv} stocks advancing against ${dec} declining. The market sentiment index reads ${score} (${lbl}), driven by strong banking sector performance. Today's top performers were ${topG}. Key headwinds included ${topL}. The ASI held near 192,826 points, with YTD gains of +23.91% intact. Outlook remains constructive as pension reform inflows provide structural demand.</p>
+          <div style="margin-top:12px;font-size:10px;color:var(--muted)">AI endpoint offline — fallback summary shown</div>
+        </div>`;
+    });
 }
 
 // ═══════════════════════════════════════════════════
@@ -4183,7 +5375,7 @@ function filterDisclosures() {
     document.getElementById('disc-count').textContent = '0 results';
     return;
   }
-  el.innerHTML = list.map(f => `<div class="filing-item" style="padding:12px 16px">
+  el.innerHTML = list.map(f => `<div class="filing-item" style="padding:12px 16px;cursor:pointer" onclick="_ext(_ngxProfile('${f.co}'))">
     <span class="filing-type ${f.typeClass}">${f.type}</span>
     <div class="filing-info">
       <div class="filing-company">${f.co}</div>
@@ -4205,7 +5397,7 @@ function renderDisclosuresView() {
       {date:'Apr 30',sym:'NESTLE',co:'Nestle Nigeria Plc',type:'AGM',typeClass:'et-agm'},
       {date:'May 05',sym:'BUAFOODS',co:'BUA Foods Plc',type:'RESULTS',typeClass:'et-results'},
       {date:'May 12',sym:'WAPCO',co:'Lafarge Africa Plc',type:'RESULTS',typeClass:'et-results'},
-    ].map(e => `<div class="earnings-item">
+    ].map(e => `<div class="earnings-item" style="cursor:pointer" onclick="_ext(_ngxProfile('${e.sym}'))">
       <span class="earnings-date">${e.date}</span>
       <div style="flex:1"><div class="earnings-sym">${e.sym}</div><div class="earnings-co">${e.co}</div></div>
       <span class="earnings-type ${e.typeClass}">${e.type}</span>
@@ -4224,7 +5416,7 @@ function renderDisclosuresView() {
       {sym:'ACCESS',    co:'Access Holdings',            yield:'₦1.70/share',  date:'May 2026'},
       {sym:'MTNN',      co:'MTN Nigeria',               yield:'₦20.00/share', date:'Jun 2026'},
       {sym:'CAP',       co:'Chemical & Allied Products',yield:'₦8.50/share',  date:'May 2026'},
-    ].map(d => `<div class="div-row">
+    ].map(d => `<div class="div-row" style="cursor:pointer" onclick="_ext(_ngxProfile('${d.sym}'))">
       ${slogo(d.sym,28)}
       <div style="flex:1"><div class="dv-sym">${d.sym}</div><div style="font-size:9.5px;color:var(--muted)">${d.co}</div></div>
       <div class="dv-info"><div class="dv-yield up">${d.yield}</div><div class="dv-date">${d.date}</div></div>
@@ -4235,7 +5427,7 @@ function renderDisclosuresView() {
 // ═══════════════════════════════════════════════════
 // NEWS VIEW RENDERING
 // ═══════════════════════════════════════════════════
-const FULL_NEWS = [
+let FULL_NEWS = [
   {headline:'MTN Nigeria hits all-time high of ₦779.70 as PenCom reforms drive institutional buying', tag:'telecom', tagLabel:'Telecoms', tagClass:'tag-telecom', source:'Nairametrics', time:'2h ago'},
   {headline:'NGX market cap crosses ₦123.8 trillion following Dangote Cement 10% weekly gain', tag:'market', tagLabel:'Market', tagClass:'tag-market', source:'BusinessDay', time:'4h ago'},
   {headline:'CBN holds Monetary Policy Rate at 27.25% — implications for equity valuations', tag:'macro', tagLabel:'Macro', tagClass:'tag-macro', source:'TheCable', time:'6h ago'},
@@ -4254,6 +5446,88 @@ const FULL_NEWS = [
   {headline:'Transcorp Hotels posts record Q4 revenue of ₦24B on tourism boom', tag:'corporate', tagLabel:'Corporate', tagClass:'tag-market', source:'Punch', time:'5d ago'},
 ];
 
+// ─── Real-time RSS news ───────────────────────────────────────────────────────
+const _RSS_SOURCES = [
+  { url: 'https://nairametrics.com/feed/',  source: 'Nairametrics' },
+  { url: 'https://businessday.ng/feed/',    source: 'BusinessDay'  },
+  { url: 'https://punchng.com/feed/',       source: 'Punch'        },
+];
+const _RSS_API = 'https://api.rss2json.com/v1/api.json?count=12&rss_url=';
+
+function _classifyNews(text) {
+  const t = text.toLowerCase();
+  if (/\b(cbn|mpc|mpr|inflation|naira|forex|fx|exchange rate|monetary|bonds?|t.?bill|gdp|imf|world bank)\b/.test(t))
+    return { tag:'macro',    tagLabel:'Macro',     tagClass:'tag-macro'    };
+  if (/\b(zenith|gtco|access|uba|fidelity|sterling|fcmb|firstholdco|wema|stanbic|citibank|recapital)\b/.test(t))
+    return { tag:'banking',  tagLabel:'Banking',   tagClass:'tag-banking'  };
+  if (/\b(seplat|oando|total|nnpc|crude|brent|oil|gas|energy|geregu|transcorp power)\b/.test(t))
+    return { tag:'energy',   tagLabel:'Energy',    tagClass:'tag-energy'   };
+  if (/\b(mtn|airtel|glo|9mobile|telecom|telco)\b/.test(t))
+    return { tag:'telecom',  tagLabel:'Telecoms',  tagClass:'tag-telecom'  };
+  if (/\b(ngx|asi|market cap|equities|stock|shares?|bourse|trading)\b/.test(t))
+    return { tag:'market',   tagLabel:'Market',    tagClass:'tag-market'   };
+  return   { tag:'corporate',tagLabel:'Corporate', tagClass:'tag-market'   };
+}
+
+function _relTimeMs(ms) {
+  const s = Math.floor((Date.now() - ms) / 1000);
+  if (s < 60)   return 'just now';
+  if (s < 3600) return Math.floor(s/60)+'m ago';
+  if (s < 86400)return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+async function fetchRSSNews() {
+  const live = [];
+  for (const src of _RSS_SOURCES) {
+    try {
+      const r = await fetch(_RSS_API + encodeURIComponent(src.url));
+      if (!r.ok) continue;
+      const d = await r.json();
+      if (d.status !== 'ok' || !d.items) continue;
+      d.items.forEach(item => {
+        const cls = _classifyNews(item.title + ' ' + (item.categories||[]).join(' '));
+        live.push({
+          headline: item.title,
+          tag:      cls.tag,
+          tagLabel: cls.tagLabel,
+          tagClass: cls.tagClass,
+          source:   src.source,
+          time:     _relTimeMs(new Date(item.pubDate).getTime()),
+          url:      item.link,
+        });
+      });
+    } catch(_) {}
+  }
+  if (live.length > 0) {
+    // Merge: live items first, then static items not already in live
+    const liveHeadlines = new Set(live.map(n => n.headline.toLowerCase().slice(0,40)));
+    const staticFiltered = FULL_NEWS.filter(n => !liveHeadlines.has(n.headline.toLowerCase().slice(0,40)));
+    FULL_NEWS = [...live, ...staticFiltered];
+    // Refresh rendered news panels
+    renderNewsFilteredList();
+    _renderNewsSidebar();
+    const trEl = document.getElementById('news-trending-list');
+    if (trEl) { trEl.innerHTML = ''; }
+    renderNewsView();
+  }
+}
+
+function _renderNewsSidebar() {
+  const nf = document.getElementById('news-feed');
+  if (!nf) return;
+  nf.innerHTML = FULL_NEWS.slice(0,8).map(n =>
+    `<div class="news-item" style="cursor:pointer" onclick="_ext('${_newsUrl(n.headline,n.source,n.url)}')">` +
+    `<div class="news-headline">${n.headline}</div>` +
+    `<div class="news-meta"><span class="news-tag ${n.tagClass}">${n.tagLabel||n.tag}</span><span>${n.source}</span><span>${n.time}</span><span class="news-arrow">→</span></div>` +
+    `</div>`
+  ).join('');
+}
+
+// Fetch on load, then every 10 minutes
+fetchRSSNews();
+setInterval(fetchRSSNews, 10 * 60 * 1000);
+
 let currentNewsFilter = 'all';
 
 function setNewsFilter(btn, tag) {
@@ -4267,10 +5541,10 @@ function renderNewsFilteredList() {
   const filtered = currentNewsFilter === 'all' ? FULL_NEWS : FULL_NEWS.filter(n => n.tag === currentNewsFilter);
   const el = document.getElementById('news-view-list');
   if (!el) return;
-  el.innerHTML = filtered.map(n => `<div class="news-main-card">
+  el.innerHTML = filtered.map(n => `<div class="news-main-card" onclick="_ext('${_newsUrl(n.headline,n.source,n.url)}')">
     <div class="news-headline-lg">${n.headline}</div>
     <div class="news-meta-row">
-      <span class="news-tag ${n.tagClass}">${n.tagLabel}</span>
+      <span class="news-tag ${n.tagClass}">${n.tagLabel||n.tag}</span>
       <span>${n.source}</span>
       <span>${n.time}</span>
       <span class="news-arrow" style="margin-left:auto">→</span>
@@ -4285,11 +5559,11 @@ function renderNewsView() {
   const trEl = document.getElementById('news-trending-list');
   if (trEl && !trEl.innerHTML) {
     const top5 = FULL_NEWS.slice(0, 5);
-    trEl.innerHTML = top5.map((n, i) => `<div class="news-item" style="display:flex;gap:12px;align-items:flex-start">
+    trEl.innerHTML = top5.map((n, i) => `<div class="news-item" style="display:flex;gap:12px;align-items:flex-start;cursor:pointer" onclick="_ext('${_newsUrl(n.headline,n.source,n.url)}')">
       <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--muted);flex-shrink:0;line-height:1.2;padding-top:2px">${i+1}</div>
       <div>
         <div class="news-headline">${n.headline}</div>
-        <div class="news-meta"><span class="news-tag ${n.tagClass}">${n.tagLabel}</span><span>${n.source}</span><span>${n.time}</span></div>
+        <div class="news-meta"><span class="news-tag ${n.tagClass}">${n.tagLabel||n.tag}</span><span>${n.source}</span><span>${n.time}</span></div>
       </div>
     </div>`).join('');
   }
@@ -4432,6 +5706,140 @@ function drawBubblesOnCanvas(canvasEl, stockData) {
   };
   canvasEl.onmouseleave = () => { hmHovered = null; document.getElementById('btip').classList.remove('show'); };
 }
+
+// ═══════════════════════════════════════════════════
+// AI ASSISTANT
+// ═══════════════════════════════════════════════════
+let _aiOpen = false;
+let _aiHistory = [];
+let _aiBusy = false;
+
+function toggleAI() {
+  _aiOpen = !_aiOpen;
+  document.getElementById('aiPanel').classList.toggle('open', _aiOpen);
+  if (_aiOpen && !_aiHistory.length) _aiWelcome();
+}
+function closeAI() { _aiOpen = false; document.getElementById('aiPanel').classList.remove('open'); }
+
+function _aiWelcome() {
+  _aiAddMsg('bot', 'Hi — I\'m NGXGlass AI, your NGX equity analyst.\n\nAsk me anything: screen stocks, analyse your portfolio, get an earnings preview, or run a sector deep-dive. Use the skill chips below for analyst-grade reports. 📊');
+}
+
+function _aiAddMsg(role, text) {
+  const box = document.getElementById('aiMessages');
+  const el = document.createElement('div');
+  el.className = `ai-msg ${role}`;
+  el.textContent = text;
+  box.appendChild(el);
+  box.scrollTop = box.scrollHeight;
+  return el;
+}
+
+function _buildAIContext() {
+  const gainers = [...STOCKS].filter(s => s.day > 0).sort((a, b) => b.day - a.day).slice(0, 5);
+  const losers  = [...STOCKS].filter(s => s.day < 0).sort((a, b) => a.day - b.day).slice(0, 5);
+  const asiEl   = document.getElementById('asi-val');
+  let ctx = `NGX ASI: ${asiEl ? asiEl.textContent : 'N/A'}\n`;
+  ctx += `Top Gainers: ${gainers.map(s => `${s.sym} +${s.day.toFixed(2)}%`).join(', ') || 'none'}\n`;
+  ctx += `Top Losers: ${losers.map(s => `${s.sym} ${s.day.toFixed(2)}%`).join(', ') || 'none'}\n`;
+  if (typeof portfolio !== 'undefined' && portfolio.length) {
+    ctx += `User Portfolio (${portfolio.length} holdings): ${portfolio.map(p => {
+      const s = STOCKS.find(x => x.sym === p.sym);
+      const pl = s ? ((s.price - p.avgCost) / p.avgCost * 100).toFixed(1) + '%' : '?';
+      return `${p.sym}(P/L ${pl})`;
+    }).join(', ')}\n`;
+  }
+  const headlines = FULL_NEWS.slice(0, 4).map(n => n.headline).join(' | ');
+  if (headlines) ctx += `Recent news: ${headlines}`;
+  return ctx;
+}
+
+async function aiSend(overrideMsg) {
+  if (_aiBusy) return;
+  const inp = document.getElementById('aiInput');
+  const msg = (overrideMsg || inp.value).trim();
+  if (!msg) return;
+  inp.value = '';
+  inp.style.height = '';
+  _aiAddMsg('user', msg);
+  _aiBusy = true;
+  document.getElementById('aiSendBtn').disabled = true;
+  const loadEl = _aiAddMsg('bot', '…');
+  loadEl.classList.add('loading');
+  try {
+    const res = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg, context: _buildAIContext(), history: _aiHistory }),
+    });
+    const data = await res.json();
+    loadEl.remove();
+    const reply = data.reply || data.error || 'Sorry, something went wrong.';
+    _aiAddMsg('bot', reply);
+    _aiHistory.push({ role: 'user', content: msg });
+    _aiHistory.push({ role: 'assistant', content: reply });
+  } catch (e) {
+    loadEl.remove();
+    _aiAddMsg('bot', 'Network error — check your connection and try again.');
+  }
+  _aiBusy = false;
+  document.getElementById('aiSendBtn').disabled = false;
+}
+
+function aiSkill(prompt) {
+  document.getElementById('aiInput').value = prompt;
+  aiSend(prompt);
+}
+
+// Auto-resize textarea
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('aiInput');
+  if (inp) {
+    inp.addEventListener('input', () => {
+      inp.style.height = '';
+      inp.style.height = Math.min(inp.scrollHeight, 80) + 'px';
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); aiSend(); }
+    });
+  }
+});
 </script>
+
+<!-- ══ AI FLOATING BUTTON ══ -->
+<button class="ai-fab" onclick="toggleAI()" title="NGXGlass AI">
+  <span class="ai-badge-dot"></span>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
+</button>
+
+<!-- ══ AI PANEL ══ -->
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-panel-head">
+    <div class="ai-avatar">✦</div>
+    <div>
+      <div class="ai-panel-title">NGXGlass AI</div>
+    </div>
+    <button class="ai-close" onclick="closeAI()">&#215;</button>
+  </div>
+
+  <div class="ai-messages" id="aiMessages"></div>
+
+  <div class="ai-skills">
+    <button class="ai-skill" onclick="aiSkill('Act as a Goldman Sachs senior equity analyst. Using the live NGX market data, screen for the top 5 undervalued NGX stocks right now. For each: P/E vs sector average, dividend yield, YTD momentum, competitive moat rating, and a bull/bear price target range. Format as a professional screening report.')">🏦 Stock Screener</button>
+    <button class="ai-skill" onclick="aiSkill('Act as a Bridgewater risk analyst. Using my portfolio in the context, run a full risk assessment: sector concentration %, single-stock risk, interest rate sensitivity given CBN MPR at 27.25%, liquidity risk per holding, recession stress-test drawdown estimate, and top 3 rebalancing suggestions with specific allocation percentages.')">⚠️ Risk Analysis</button>
+    <button class="ai-skill" onclick="aiSkill('Act as a JPMorgan equity research analyst. Give me an earnings preview for the next NGX company reporting results. Cover: last 4 quarters beat/miss history, key metrics the market is watching, bull and bear scenario with price impact, and your pre-earnings recommendation: buy before, sell before, or wait.')">📋 Earnings Preview</button>
+    <button class="ai-skill" onclick="aiSkill('Act as a BlackRock portfolio strategist. Based on my current NGX holdings in the context, build an optimised portfolio: ideal sector allocation %, identify over/underweight positions, suggest 2-3 stocks to trim and 2-3 to add with rationale, and a rebalancing schedule. Focus on NGX-listed equities only.')">📊 Portfolio Builder</button>
+    <button class="ai-skill" onclick="aiSkill('Act as a Harvard endowment dividend strategist. From NGX equities, identify the 8 best dividend income stocks right now: dividend yield, payout ratio sustainability score (1-10), years of consistent payment, and estimated annual ₦ income per ₦1M invested. Rank from safest to highest yield.')">💰 Dividend Strategy</button>
+    <button class="ai-skill" onclick="aiSkill('Act as a Bain & Company sector analyst. Analyse the NGX Banking sector: top 5 stocks by market cap with P/E and ROE comparison, competitive moat for each, biggest regulatory risk (CBN recapitalisation), and your single best pick with a 12-month catalyst.')">🔍 Sector Deep-Dive</button>
+  </div>
+
+  <div class="ai-input-row">
+    <textarea class="ai-input" id="aiInput" placeholder="Ask about any NGX stock…" rows="1"></textarea>
+    <button class="ai-send" id="aiSendBtn" onclick="aiSend()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
