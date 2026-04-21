@@ -3,104 +3,149 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-Single-file HTML dashboard for Nigerian Exchange (NGX) analytics.
-- **Main file:** `ngx-dashboard-v1.html` (~4600+ lines)
-- **No build step** — everything is self-contained HTML/CSS/JS; open directly in a browser
-- **Contact email:** ngxglass@gmail.com (use this for all contact/API references — not the one in `docs/api-reference.md`)
-- **Deployed via Netlify** — `netlify.toml` handles routing; serverless functions go in `netlify/functions/`
 
-## Architecture
+Nigerian Exchange (NGX) analytics dashboard. The repository contains two implementations that must stay in sync:
 
-### Views
-All views live inside `<div class="page">`. Switching is handled by `switchView(view)` which hides all views in the `ALL_VIEWS` array, then shows the target.
-
-| View ID | Nav Tab | Notes |
+| | Path | Status |
 |---|---|---|
-| `market-view` | Market (mega menu) | Default view |
-| `portfolio-view` | Portfolio Tracker | localStorage-persisted holdings |
-| `heatmap-view` | Heatmap | Sector tiles + bubble canvas + tables |
-| `disclosures-view` | Disclosures | Filings list with filter + search |
-| `news-view` | News | Full news feed with category filters |
-| `analysis-view` | Analysis | Stock screener, sector valuation, YTD leaders |
-| `delisted-view` | Delisted | Historical registry of delisted/suspended securities |
+| **Original** | `ngx-dashboard-v1.html` | ~4700-line self-contained HTML/CSS/JS, live in production |
+| **Next.js app** | `ngx-app/` | Full migration, same feature set, deploys via **Vercel** |
 
-### Key Data Arrays
-- `STOCKS` — 156 NGX equities. Schema in `data/stocks-schema.json`. Fields: `r` (rank), `sym`, `co`, `sec`, `price`, `day`, `week`, `ytd`, `capN`, `capV`, `vol`, `volV`, `os`, `lo`, `hi`, `div`, `pe`, `up`
-- `BUBBLE_STOCKS` — subset of STOCKS used for the market-view animated bubble canvas
-- `SECTOR_DATA` — 15 sectors with WTD % change, stock count, market cap (used in heatmap tiles)
-- `FULL_FILINGS` — corporate filings/disclosures for the Disclosures view
-- `FULL_NEWS` — news items with `tag`, `tagLabel`, `tagClass`, `source`, `time` fields
-- `earningsCalendar` — upcoming results/AGM/dividend dates
-- `DELISTED_STOCKS` — 18 historically delisted/suspended NGX securities (fields: `sym`, `co`, `sec`, `date`, `reason`, `tag`, `note`)
-- `STOCK_DOMAINS` — map of `sym → domain` used to load company logos via `https://logo.clearbit.com/{domain}`
+- **Contact email:** ngxglass@gmail.com
+- **GitHub remote:** `mechanovahq/NGX_Glass`
+- **Deploy target:** Vercel (`ngx-app/vercel.json`). Do not deploy to Netlify.
 
-### Auth System
-- **Primary:** Supabase Auth (`_sb` client, configured via `SUPABASE_URL` + `SUPABASE_KEY` at top of `<script>`)
-- **Fallback:** localStorage (`ngxglass-users` = registered accounts, `ngxglass-user` = current session) — used when Supabase is unconfigured
-- `doLogin()` / `doSignup()` / `logoutUser()` are async and call Supabase first, falling back to localStorage
-- `openLogin(tab)` / `closeLogin()` / `demoLogin()` / `updateNavAuth()` — modal control + nav state
-- `_sb.auth.onAuthStateChange` listener syncs UI on session changes
+---
 
-### Logo Rendering Pipeline
-`slogo(sym, size)` renders a company logo as an inline HTML string (used throughout all views):
-1. Looks up `STOCK_DOMAINS[sym]` for the domain
-2. Tries Clearbit logo API: `https://logo.clearbit.com/{domain}`
-3. On failure → falls back to Google Favicons: `https://www.google.com/s2/favicons?domain={domain}&sz=128`
-4. On second failure → renders a letter-avatar `<div>` using `_LOGO_SEC_CLR[sec]` for the sector colour
+## Local Development
 
-`_bubbleLogoCache` / `getBubbleLogo(sym)` / `_drawBubbleLogo(ctx, sym, bx, by, r)` do the same for canvas bubbles.
-
-### Bubble Canvas
-- `drawBubbles()` — animates the market-view bubble canvas (uses globals `canvas`, `bubbles`, `animId`)
-- `drawBubblesOnCanvas(canvasEl, stockData)` — reusable renderer for the heatmap view canvas
-- `setBubbleView(btn, filter)` — filter for market-view bubbles
-- `setHeatmapBubbleView(btn, filter)` — filter for heatmap-view bubbles (scoped to `#heatmap-view`)
-- `getBubbleLogo(sym)` / `_drawBubbleLogo(ctx, sym, bx, by, r)` — draws company logos inside large bubbles (r≥30) using `_bubbleLogoCache`
-
-## CSS Theme
-- Dark: `[data-theme="dark"]` (default) — `--bg:#080b0e`, `--surface:#0e1217`
-- Light: `[data-theme="light"]` — toggle via the 🌙 icon button
-- Accent green: `--accent:#16a34a`, `--accent-light:#22c55e`
-- All CSS is in the `<style>` block in `<head>` — grouped by component with `═══` section headers
-
-## Key Functions Reference
+### Original HTML file
+```bash
+node dev-server.js        # serves at http://localhost:3000
 ```
-switchView(view)         — show a named view, scroll to top
-renderPortfolio()        — re-render all portfolio panels
-renderHeatmapView()      — populate heatmap sector tiles + tables + bubble canvas
-renderDisclosuresView()  — render FULL_FILINGS list + earnings calendar + dividend board
-renderNewsView()         — render FULL_NEWS list + trending sidebar
-filterDisclosures()      — re-filter disclosures by type + search query
-setNewsFilter(btn, tag)  — re-filter news by category tag
-showToast(msg)           — show bottom-right toast for 3s
-openCS(name, icon)       — open "Coming Soon" modal for unbuilt mega-menu features
-renderAnalysisView()     — renders screener + sector valuation + YTD leaders panels
-runScreener()            — re-filters STOCKS by sector/P/E/div/YTD/cap inputs in analysis-view
-resetScreener()          — clears all screener filters
-renderDelistedView()     — renders DELISTED_STOCKS list + summary stats
-filterDelisted(btn,type) — re-filters delisted list by reason type
+`dev-server.js` has no npm dependencies. It proxies `/api/ngx/` → `afx.kwayisi.org` for live prices.
+
+### Next.js app
+```bash
+cd ngx-app
+npm run dev               # http://localhost:3000 (or next available port)
+npm run build             # production build, must pass before deploying
+npm run lint              # eslint
 ```
 
-## Patterns to Know
+---
+
+## Live Price Architecture
+
+```
+GitHub Actions (cron, every 15min Mon–Fri 09–13 UTC)
+  └── Fetches afx.kwayisi.org → parses HTML → data/prices.json
+      └── raw.githubusercontent.com/mechanovahq/NGX_Glass/main/data/prices.json
+          └── /api/prices (Next.js route / Netlify edge function) → browser
+```
+
+**Critical constraint:** afx.kwayisi.org blocks all cloud/CDN IPs. Only GitHub Actions (Azure) and residential IPs can reach it. This chain is the only viable free approach.
+
+**Local fallback:** `app/api/prices/route.ts` tries the raw GitHub URL first, then falls back to reading `../data/prices.json` from the local filesystem. This means `data/prices.json` must be pushed to GitHub for production prices to work.
+
+**Market hours:** Mon–Fri 10:00–14:30 WAT (UTC+1, no DST). SWR polls every 60s when open, 300s when closed.
+
+---
+
+## Next.js App Architecture (`ngx-app/`)
+
+### Framework specifics
+- **Next.js 16.1.6**, App Router, TypeScript, React 19
+- **Tailwind v4** — configured entirely in `app/globals.css` via `@import "tailwindcss"`. No `tailwind.config.ts`. Dark mode uses `@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *))`.
+- **Middleware convention**: Next.js 16 uses `proxy.ts` (not `middleware.ts`) with exported function named `proxy`.
+- **Design system:** Tessera-inspired. Fonts: Inter (sans) + JetBrains Mono (data/labels) + Georgia fallback for display. Colors: `--bg #0a0b0d`, `--accent #c9a961` (brass), `--pos #4a9d7c` (teal), `--neg #c5563e` (coral). All borders are 0.5px hairline. Border-radius: 2px flat everywhere.
+
+### Data flow
+1. `app/Providers.tsx` (`'use client'`) wraps the whole app: `ThemeProvider → StocksProvider → LivePricesBootstrapper`
+2. `StocksContext` holds the 156-stock `STOCKS` array in a `useReducer`. `UPDATE_PRICES` merges live data by sym (only updates `price`, `day`, `up` fields).
+3. `useLivePrices` (called by `LivePricesBootstrapper`, renders null) polls `/api/prices` via SWR and dispatches `UPDATE_PRICES`.
+4. All view components call `useStocks()` to get the latest stock data.
+
+### Canvas components
+All three canvas components follow the same pattern — never use React state for animation data:
+- **`BubbleCanvas`** — `useRef` for `bubbles[]` array + `animId`; `useEffect([filter])` re-initialises physics; price changes from `useEffect([stocks])` mutate `bubblesRef` in-place without re-render.
+- **`GrowthChartCanvas`** — `useState<PFTimeframe>` for timeframe selector; redraws on tf/enriched/theme change.
+- **`AllocationChartCanvas`** — returns `AllocationSlice[]` from `drawAllocationChart()` to render the legend outside the canvas.
+
+### Theme
+- Dark (default): `:root` CSS variables — `--bg:#080b0e`, `--surface:#0e1217`, `--accent:#16a34a`
+- Light: `[data-theme="light"]` overrides. Toggle writes to localStorage + sets `data-theme` on `<html>`.
+- `data-theme="dark"` is set on `<html>` in `app/layout.tsx` as the SSR default to prevent flash.
+
+### Auth
+`proxy.ts` refreshes Supabase sessions on every request. Auth components use the browser Supabase client from `lib/supabase/client.ts`. Do not remove the `await supabase.auth.getUser()` call in `proxy.ts`.
+
+### Logo fallback chain
+`StockLogo.tsx` advances through stages on `onError`: `ngxpulse → clearbit → google → letter-avatar`. Uses `<img>` (not `next/image`) because the fallback chain requires imperative `onError` handling.
+
+`lib/canvas/logoCache.ts` implements the same chain for canvas bubble rendering via `Image()` objects.
+
+### Key lib files
+- `lib/data/stocks.ts` — 156-entry `STOCKS` array (source of truth for all views)
+- `lib/data/stockDomains.ts` — `STOCK_DOMAINS` map (`sym → domain`), `NGX_SVG_SYMS` set, `LOGO_SEC_CLR` sector colours
+- `lib/canvas/bubblePhysics.ts` — pure TS: `initBubbles()`, `tickPhysics()`, `initHeatmapBubbles()` — no DOM
+- `lib/canvas/bubbleRenderer.ts` — canvas draw calls: radial gradient, border, shine, label, logo
+- `lib/utils/marketTime.ts` — `isMarketOpen()`, `watTimeString()`, `nextOpenLabel()` — pure functions, no DOM
+- `lib/constants.ts` — `SECTOR_COLORS`, `bubbleColor(pct, alpha)`, `glowColor(pct)`
+
+### API routes
+- `GET /api/prices` — GitHub raw URL with local file fallback; 60s cache
+- `POST /api/ai` — Groq (llama-3.3-70b-versatile) primary, Anthropic claude-haiku-4-5 fallback
+
+### Environment variables (`.env.local`)
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+GROQ_API_KEY=          # primary for /api/ai
+ANTHROPIC_API_KEY=     # fallback for /api/ai
+```
+
+---
+
+## Original HTML App Architecture (`ngx-dashboard-v1.html`)
+
+All views live inside `<div class="page">`. `switchView(id)` hides all IDs in `ALL_VIEWS`, then shows the target.
+
+| View ID | Notes |
+|---|---|
+| `market-view` | Default. Bubble canvas + equities table. |
+| `portfolio-view` | localStorage holdings. Canvas growth chart; `canvas._pfData` stores data for timeframe switches. |
+| `heatmap-view` | Sector tiles + bubble canvas. `drawBubblesOnCanvas(canvasEl, data)` is the reusable renderer. |
+| `disclosures-view` | Filings list with filter + search. |
+| `news-view` | Full news feed with category filters. |
+
+### Key data arrays (all in the HTML `<script>` block)
+- `STOCKS` — 156 equities; `price` and `day` mutated in-place by `fetchLivePrices()`
+- `BUBBLE_STOCKS` — subset for market bubble canvas; also mutated by `fetchLivePrices()`
+- `SECTOR_DATA`, `FULL_FILINGS`, `FULL_NEWS`, `earningsCalendar`, `STOCK_DOMAINS`
+
+### Live prices (HTML version)
+`fetchLivePrices()` detects `localhost` vs production:
+- **localhost** → `_fetchAFXDirect()` proxied through `dev-server.js`
+- **production** → `/api/prices` (Netlify edge function at `netlify/edge-functions/prices.js`)
+
+After updating prices, it calls `renderTable()`, `renderMovers()`, `renderFI()`, `renderPortfolio()`.
 
 ### One-time render guard
-Several panels only populate once to avoid redundant redraws:
+Several panels populate only once:
 ```js
 if (!el || el.innerHTML) return;
 ```
-If a panel appears blank after a data update, clear its `innerHTML` first (or call the view's full render function again).
+Clear `innerHTML` first if a panel appears blank after a data update.
 
 ### Data refresh checklist
-When updating STOCKS prices or adding new data, also update:
-1. The hardcoded date strings in the HTML (search for `Mar 10, 2026` to find all occurrences)
-2. The `data-stale-badge` text in `analysis-view` and `delisted-view` HTML
-3. The market summary paragraph in the News view sidebar
-4. The ASI value in the market header (`asi-val` span)
-5. `fxData` array for FX rates, and `FIXED_INCOME` object for T-bill/bond rates
+When updating STOCKS prices or dates in the HTML file:
+1. Search `Mar 10, 2026` — update all hardcoded date strings
+2. Update `asi-val` span (ASI index value)
+3. Update the market summary paragraph in the News view sidebar
+4. Update `fxData` array and `FIXED_INCOME` object if rates changed
 
-## Editing Guidelines
-- **Never add a backend** — keep everything self-contained in the single HTML file (Netlify Functions are the exception for lightweight serverless needs)
-- **Data updates:** Edit the `STOCKS`, `FULL_FILINGS`, `FULL_NEWS`, `SECTOR_DATA` arrays directly
-- **New views:** Add HTML block inside `<div class="page">`, add ID to `ALL_VIEWS` array, add `case` in `switchView`, add nav tab with `data-view` attribute
-- **Adding company logos:** Add `sym: "domain.com"` entry to `STOCK_DOMAINS`
-- **Supabase schema changes:** Update `supabase-schema.sql` and run in Supabase SQL Editor (`profiles`, `portfolio_holdings`, `price_alerts`, `watchlist` tables — all with RLS)
+### Adding / editing data
+- **Company logos:** Add `sym: "domain.com"` to `STOCK_DOMAINS` (both `ngx-dashboard-v1.html` and `ngx-app/lib/data/stockDomains.ts`)
+- **New view (HTML):** Add HTML inside `<div class="page">`, add ID to `ALL_VIEWS`, add `case` in `switchView`, add nav tab with `data-view` attribute
+- **Supabase schema changes:** Update `supabase-schema.sql` and run in Supabase SQL Editor. Tables: `profiles`, `portfolio_holdings`, `price_alerts`, `watchlist` — all with RLS.
