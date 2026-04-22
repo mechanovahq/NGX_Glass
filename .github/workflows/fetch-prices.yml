@@ -4,10 +4,10 @@ on:
   schedule:
     # Every 15 minutes Mon–Fri during NGX market hours (10:00–14:30 WAT = 09:00–13:30 UTC)
     - cron: '*/15 9-13 * * 1-5'
-    # One run at 08:55 UTC (before market open) and 14:00 UTC (after close) to capture snapshots
+    # Snapshot before open and after close
     - cron: '55 8 * * 1-5'
     - cron: '0 14 * * 1-5'
-  workflow_dispatch: # allow manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   fetch-prices:
@@ -18,175 +18,132 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch and parse NGX prices from afx.kwayisi.org
+      - name: Fetch NGX live prices via NGX Pulse API
         run: |
           python3 << 'EOF'
           import urllib.request
-          import urllib.error
-          import re
           import json
           import os
-          import time
           from datetime import datetime, timezone, timedelta
 
-          def fetch_page(url, retries=5, base_delay=8):
-              headers = {
-                  'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                  'Accept-Language': 'en-US,en;q=0.9',
-                  'Accept-Encoding': 'gzip, deflate',
-                  'Connection': 'keep-alive',
-                  'Upgrade-Insecure-Requests': '1',
-                  'Cache-Control': 'max-age=0',
-              }
-              last_err = None
-              for attempt in range(retries):
-                  if attempt > 0:
-                      delay = base_delay * attempt
-                      print(f'Retry {attempt}/{retries-1} for {url} (waiting {delay}s)')
-                      time.sleep(delay)
-                  try:
-                      req = urllib.request.Request(url, headers=headers)
-                      with urllib.request.urlopen(req, timeout=60) as resp:
-                          raw = resp.read()
-                          # handle gzip if server sends it despite not asking
-                          if resp.info().get('Content-Encoding') == 'gzip':
-                              import gzip
-                              raw = gzip.decompress(raw)
-                          return raw.decode('utf-8', errors='replace')
-                  except Exception as e:
-                      last_err = e
-                      print(f'Attempt {attempt+1} failed: {e}')
-              raise last_err
+          NGX_BASE = "https://ngxpulse.ng/api"
+          NGX_API_KEY = "ngxpulse_c6maakeuc936ai8r"
 
-          def strip_tags(s):
-              return re.sub(r'<[^>]+>', '', s).strip()
-
-          def parse_stocks(html):
-              results = []
-              table_start = html.find('<th>Ticker')
-              if table_start == -1:
-                  return results
-              rows = html[table_start:].split('<tr>')[1:]
-              for row in rows:
-                  cells_raw = row.split('<td>')[1:]
-                  cells = [strip_tags(c) for c in cells_raw]
-                  if len(cells) < 4:
-                      continue
-                  sym = re.sub(r'[^A-Z0-9]', '', cells[0].upper())
-                  try:
-                      price = float(cells[3].replace(',', ''))
-                  except:
-                      continue
-                  try:
-                      change = float((cells[4] if len(cells) > 4 else '0').replace(',', ''))
-                  except:
-                      change = 0.0
-                  if len(sym) >= 2 and price > 0:
-                      prev = price - change
-                      pct = round((change / prev * 100) if prev > 0 else 0, 4)
-                      results.append({'sym': sym, 'price': price, 'change': change, 'changePct': pct})
-              return results
-
-          def parse_market_summary(html):
-              """Extract ASI index value, change, turnover, shares traded from page."""
-              summary = {}
-              # ASI: look for patterns like "109,142.36" near "All-Share" or "ASI"
-              asi_match = re.search(
-                  r'All.?Share[^<]*</[^>]+>\s*<[^>]+>\s*([\d,]+\.?\d*)',
-                  html, re.IGNORECASE
+          def ngx_fetch(path):
+              req = urllib.request.Request(
+                  f"{NGX_BASE}{path}",
+                  headers={
+                      "X-API-Key": NGX_API_KEY,
+                      "User-Agent": "NGXGlass/1.0",
+                      "Accept": "application/json",
+                  }
               )
-              if not asi_match:
-                  asi_match = re.search(
-                      r'ASI[^<]{0,80}([\d]{3},[\d]{3}(?:\.[\d]+)?)',
-                      html, re.IGNORECASE
-                  )
-              if asi_match:
-                  try:
-                      summary['asi'] = float(asi_match.group(1).replace(',', ''))
-                  except:
-                      pass
-
-              if 'asi' in summary:
-                  change_match = re.search(
-                      r'([-+]?[\d,]+\.[\d]+)\s*\(?([-+]?[\d.]+)%\)?',
-                      html[max(0, asi_match.start()-200):asi_match.start()+400]
-                  )
-                  if change_match:
-                      try:
-                          summary['asiChange'] = float(change_match.group(1).replace(',', ''))
-                          summary['asiChangePct'] = float(change_match.group(2))
-                      except:
-                          pass
-
-              turn_match = re.search(
-                  r'[Tt]urnover[^<]{0,100}([\d,]+(?:\.[\d]+)?)',
-                  html
-              )
-              if turn_match:
-                  try:
-                      val = float(turn_match.group(1).replace(',', ''))
-                      if val > 1_000_000:
-                          summary['turnover'] = '₦' + f'{val/1_000_000_000:.2f}' + 'B'
-                      elif val > 0:
-                          summary['turnover'] = '₦' + f'{val:.2f}' + 'B'
-                  except:
-                      pass
-
-              shares_match = re.search(
-                  r'[Vv]olume[^<]{0,100}([\d,]+(?:\.[\d]+)?)',
-                  html
-              )
-              if shares_match:
-                  try:
-                      val = float(shares_match.group(1).replace(',', ''))
-                      if val > 1_000_000_000:
-                          summary['sharesTraded'] = f'{val/1_000_000_000:.2f}B'
-                      elif val > 1_000_000:
-                          summary['sharesTraded'] = f'{val/1_000_000:.1f}M'
-                  except:
-                      pass
-
-              return summary
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  return json.loads(resp.read().decode("utf-8"))
 
           try:
-              print('Fetching page 1...')
-              page1 = fetch_page('https://afx.kwayisi.org/ngx/')
-              print(f'Page 1 fetched ({len(page1)} chars)')
+              print("Fetching NGX stocks...")
+              stocks_raw = ngx_fetch("/ngxdata/stocks")
+              print(f"Got {len(stocks_raw)} stocks from API")
 
-              print('Fetching page 2...')
-              page2 = fetch_page('https://afx.kwayisi.org/ngx/?page=2')
-              print(f'Page 2 fetched ({len(page2)} chars)')
+              print("Fetching NGX market summary...")
+              try:
+                  market_raw = ngx_fetch("/ngxdata/market")
+              except Exception as e:
+                  print(f"Market summary fetch failed (non-fatal): {e}")
+                  market_raw = {}
 
-              all_stocks = parse_stocks(page1) + parse_stocks(page2)
-              seen = set()
+              # Parse stocks
               result = []
-              for s in all_stocks:
-                  if s['sym'] not in seen:
-                      seen.add(s['sym'])
-                      result.append(s)
+              seen = set()
+              for s in stocks_raw:
+                  sym = str(s.get("symbol", "")).upper().strip()
+                  price = float(s.get("current_price", 0) or 0)
+                  change_pct = float(s.get("change_percent", 0) or 0)
+                  if not sym or price <= 0 or sym in seen:
+                      continue
+                  seen.add(sym)
+                  # Derive absolute change from price and percent
+                  prev = price / (1 + change_pct / 100) if change_pct != -100 else price
+                  change = round(price - prev, 4)
+                  result.append({
+                      "sym": sym,
+                      "price": price,
+                      "change": change,
+                      "changePct": round(change_pct, 4),
+                  })
 
               if not result:
-                  print('ERROR: Parsed 0 stocks — aborting')
+                  print("ERROR: Parsed 0 stocks — aborting")
                   exit(1)
 
-              market_summary = parse_market_summary(page1)
-              print(f'Market summary extracted: {market_summary}')
+              # Parse market summary
+              output_extra = {}
+              if market_raw:
+                  print(f"Market raw keys: {list(market_raw.keys())}")
+                  # Try common field names for ASI
+                  for key in ("asi", "all_share_index", "index_value", "value"):
+                      if key in market_raw:
+                          try:
+                              output_extra["asi"] = float(str(market_raw[key]).replace(",", ""))
+                          except:
+                              pass
+                          break
+                  for key in ("change", "asi_change", "index_change"):
+                      if key in market_raw:
+                          try:
+                              output_extra["asiChange"] = float(str(market_raw[key]).replace(",", ""))
+                          except:
+                              pass
+                          break
+                  for key in ("change_percent", "asi_change_percent", "percent_change"):
+                      if key in market_raw:
+                          try:
+                              output_extra["asiChangePct"] = float(str(market_raw[key]).replace(",", ""))
+                          except:
+                              pass
+                          break
+                  for key in ("turnover", "total_turnover", "market_turnover"):
+                      if key in market_raw:
+                          raw_t = market_raw[key]
+                          try:
+                              val = float(str(raw_t).replace(",", "").replace("₦", ""))
+                              if val > 1_000_000:
+                                  output_extra["turnover"] = "₦" + f"{val/1_000_000_000:.2f}" + "B"
+                              else:
+                                  output_extra["turnover"] = str(raw_t)
+                          except:
+                              output_extra["turnover"] = str(raw_t)
+                          break
+                  for key in ("volume", "shares_traded", "total_volume", "total_shares"):
+                      if key in market_raw:
+                          try:
+                              val = float(str(market_raw[key]).replace(",", ""))
+                              if val > 1_000_000_000:
+                                  output_extra["sharesTraded"] = f"{val/1_000_000_000:.2f}B"
+                              elif val > 1_000_000:
+                                  output_extra["sharesTraded"] = f"{val/1_000_000:.1f}M"
+                          except:
+                              pass
+                          break
 
               wat = datetime.now(timezone(timedelta(hours=1)))
               output = {
-                  'result': result,
-                  'updated': wat.strftime('%Y-%m-%dT%H:%M:%S+01:00'),
-                  'count': len(result),
+                  "result": result,
+                  "updated": wat.strftime("%Y-%m-%dT%H:%M:%S+01:00"),
+                  "count": len(result),
               }
-              output.update(market_summary)
+              output.update(output_extra)
+              print(f"Market stats included: {output_extra}")
 
-              os.makedirs('data', exist_ok=True)
-              with open('data/prices.json', 'w') as f:
-                  json.dump(output, f, separators=(',', ':'))
-              print(f'Saved {len(result)} stocks')
+              os.makedirs("data", exist_ok=True)
+              with open("data/prices.json", "w") as f:
+                  json.dump(output, f, separators=(",", ":"))
+              print(f"Saved {len(result)} stocks to data/prices.json")
+
           except Exception as e:
-              print(f'FETCH ERROR: {e}')
+              print(f"FETCH ERROR: {e}")
+              import traceback; traceback.print_exc()
               exit(1)
           EOF
 
