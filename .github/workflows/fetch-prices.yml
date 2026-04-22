@@ -41,14 +41,36 @@ jobs:
               with urllib.request.urlopen(req, timeout=30) as resp:
                   return json.loads(resp.read().decode("utf-8"))
 
+          def extract_list(raw):
+              """Handle both plain arrays and wrapped responses like {data:[...]} or {stocks:[...]}"""
+              if isinstance(raw, list):
+                  return raw
+              if isinstance(raw, dict):
+                  print(f"Response keys: {list(raw.keys())}")
+                  for key in ("data", "stocks", "result", "equities", "items"):
+                      if key in raw and isinstance(raw[key], list):
+                          return raw[key]
+                  # Return first list value found
+                  for v in raw.values():
+                      if isinstance(v, list):
+                          return v
+              return []
+
           try:
               print("Fetching NGX stocks...")
               stocks_raw = ngx_fetch("/ngxdata/stocks")
-              print(f"Got {len(stocks_raw)} stocks from API")
+              stocks_list = extract_list(stocks_raw)
+              print(f"Got {len(stocks_list)} stocks from API")
 
               print("Fetching NGX market summary...")
               try:
                   market_raw = ngx_fetch("/ngxdata/market")
+                  if isinstance(market_raw, dict):
+                      # unwrap if nested
+                      for key in ("data", "market", "summary"):
+                          if key in market_raw and isinstance(market_raw[key], dict):
+                              market_raw = market_raw[key]
+                              break
               except Exception as e:
                   print(f"Market summary fetch failed (non-fatal): {e}")
                   market_raw = {}
@@ -56,7 +78,7 @@ jobs:
               # Parse stocks
               result = []
               seen = set()
-              for s in stocks_raw:
+              for s in stocks_list:
                   sym = str(s.get("symbol", "")).upper().strip()
                   price = float(s.get("current_price", 0) or 0)
                   change_pct = float(s.get("change_percent", 0) or 0)
@@ -74,7 +96,8 @@ jobs:
                   })
 
               if not result:
-                  print("ERROR: Parsed 0 stocks — aborting")
+                  print(f"ERROR: Parsed 0 stocks from {len(stocks_list)} API rows — aborting")
+                  print(f"Sample row: {stocks_list[:2] if stocks_list else 'empty'}")
                   exit(1)
 
               # Parse market summary
