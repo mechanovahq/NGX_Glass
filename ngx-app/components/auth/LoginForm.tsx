@@ -1,32 +1,32 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
 
 interface Props {
   onSuccess: () => void;
 }
 
-export default function LoginForm({ onSuccess }: Props) {
+export default function LoginForm({ onSuccess: _onSuccess }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const sb = createClient();
-      const { error: err } = await sb.auth.signInWithPassword({ email, password });
-      if (err) throw err;
-      onSuccess();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Login failed');
-    } finally {
-      setLoading(false);
-    }
+    setSubmitted(true);
+  }
+
+  if (submitted) {
+    return (
+      <div className="auth-setup-notice">
+        <div className="auth-setup-icon">⚙</div>
+        <p className="auth-setup-title">Authentication coming soon</p>
+        <p className="auth-setup-sub">
+          We&apos;re finishing up the database setup. Check back shortly — your account for{' '}
+          <strong>{email}</strong> will be ready to use.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -53,9 +53,8 @@ export default function LoginForm({ onSuccess }: Props) {
           required
         />
       </div>
-      {error && <div className="form-error">{error}</div>}
-      <button type="submit" className="btn-login" disabled={loading}>
-        {loading ? 'Signing in…' : 'Sign In'}
+      <button type="submit" className="btn-login">
+        Sign In
       </button>
     </form>
   );

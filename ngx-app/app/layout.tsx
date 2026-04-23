@@ -4,8 +4,6 @@ import { JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from './Providers';
 import Nav from '@/components/layout/Nav';
-import MarketBanner from '@/components/layout/MarketBanner';
-import TickerStrip from '@/components/layout/TickerStrip';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -30,11 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
         <Providers>
           <Nav />
-          <MarketBanner />
-          <TickerStrip />
-          <div className="page">
-            {children}
-          </div>
+          {children}
         </Providers>
       </body>
     </html>

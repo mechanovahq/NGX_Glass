@@ -4,11 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AuthModal from '@/components/auth/AuthModal';
+import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 const NAV_TABS = [
-  { label: 'Market',     href: '/' },
+  { label: 'Market',     href: '/market' },
   { label: 'Heatmap',   href: '/heatmap' },
   { label: 'Filings',   href: '/disclosures' },
   { label: 'Portfolio', href: '/portfolio' },
@@ -19,6 +21,22 @@ export default function Nav() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [authOpen, setAuthOpen] = useState<'login' | 'signup' | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  const isLanding = pathname === '/';
+
+  useEffect(() => {
+    try {
+      const sb = createClient();
+      sb.auth.getUser().then(({ data }) => setUser(data.user ?? null)).catch(() => {});
+      const { data: { subscription } } = sb.auth.onAuthStateChange((_e, session) => {
+        setUser(session?.user ?? null);
+      });
+      return () => subscription.unsubscribe();
+    } catch {
+      // Supabase not configured — stay logged out
+    }
+  }, []);
 
   return (
     <>
@@ -34,12 +52,9 @@ export default function Nav() {
         </Link>
 
         <div className="nav-divider" />
-
         <div className="nav-tabs">
           {NAV_TABS.map(tab => {
-            const isActive = tab.href === '/'
-              ? pathname === '/'
-              : pathname.startsWith(tab.href);
+            const isActive = !isLanding && pathname.startsWith(tab.href);
             return (
               <Link
                 key={tab.href}
@@ -62,8 +77,26 @@ export default function Nav() {
           >
             {theme === 'dark' ? '◐' : '◑'}
           </button>
-          <button className="btn-sm" onClick={() => setAuthOpen('login')}>Log In</button>
-          <button className="btn-primary" onClick={() => setAuthOpen('signup')}>Get Started</button>
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="user-avatar" title={user.email ?? ''}>
+                {(user.user_metadata?.full_name?.[0] ?? user.email?.[0] ?? '?').toUpperCase()}
+              </div>
+              <button
+                className="btn-sm"
+                onClick={() => {
+                  try { createClient().auth.signOut(); } catch {}
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <>
+              <button className="btn-sm" onClick={() => setAuthOpen('login')}>Log In</button>
+              <button className="btn-primary" onClick={() => setAuthOpen('signup')}>Get Started</button>
+            </>
+          )}
         </div>
       </nav>
 
