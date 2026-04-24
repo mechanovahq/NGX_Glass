@@ -884,6 +884,23 @@ td.sym-cell .sub { font-size:9.5px; color:var(--muted); font-weight:400; margin-
   .footer-grid { grid-template-columns:1fr }
 }
 
+/* ═══════ AUTH PAGES (callback / reset) ═══════ */
+.auth-center-wrap {
+  min-height: calc(100dvh - 52px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.auth-notice-box {
+  background: var(--surface);
+  border: 0.5px solid var(--border-strong);
+  border-radius: 2px;
+  padding: 36px 32px;
+  width: 100%; max-width: 400px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+}
+
 /* ═══════ LANDING PAGE ═══════ */
 .landing {
   min-height: calc(100dvh - 52px);

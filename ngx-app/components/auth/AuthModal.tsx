@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
+import ResetPasswordForm from './ResetPasswordForm';
+
+type Tab = 'login' | 'signup' | 'reset';
 
 interface Props {
   initialTab: 'login' | 'signup';
@@ -10,42 +13,59 @@ interface Props {
 }
 
 export default function AuthModal({ initialTab, onClose }: Props) {
-  const [tab, setTab] = useState<'login' | 'signup'>(initialTab);
+  const [tab, setTab] = useState<Tab>(initialTab);
 
   return (
-    <div className="login-overlay" onClick={onClose}>
+    <div className="login-overlay open" onClick={onClose}>
       <div className="login-box" onClick={e => e.stopPropagation()}>
-        <div className="login-header">
-          <div style={{ fontWeight: 800, fontSize: 15 }}>
-            <span style={{ color: 'var(--accent-light)' }}>NGX</span>Glass
-          </div>
+
+        {/* Header */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '16px 20px', borderBottom: '0.5px solid var(--border)',
+        }}>
+          <span style={{ fontWeight: 800, fontSize: 15 }}>
+            <span style={{ color: 'var(--accent)' }}>NGX</span>Glass
+          </span>
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: 18 }}
+            aria-label="Close"
+            style={{ background: 'none', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: 18, lineHeight: 1 }}
           >
             ✕
           </button>
         </div>
 
-        <div className="login-tabs">
-          <button
-            className={`login-tab${tab === 'login' ? ' active' : ''}`}
-            onClick={() => setTab('login')}
-          >
-            Log In
-          </button>
-          <button
-            className={`login-tab${tab === 'signup' ? ' active' : ''}`}
-            onClick={() => setTab('signup')}
-          >
-            Sign Up
-          </button>
+        {/* Tabs */}
+        {tab !== 'reset' && (
+          <div className="login-tabs">
+            <button
+              className={`login-tab-btn${tab === 'login' ? ' active' : ''}`}
+              onClick={() => setTab('login')}
+            >
+              Sign In
+            </button>
+            <button
+              className={`login-tab-btn${tab === 'signup' ? ' active' : ''}`}
+              onClick={() => setTab('signup')}
+            >
+              Create Account
+            </button>
+          </div>
+        )}
+
+        {/* Forms */}
+        <div style={{ padding: '20px 24px 28px' }}>
+          {tab === 'login'  && (
+            <LoginForm
+              onSuccess={onClose}
+              onForgotPassword={() => setTab('reset')}
+            />
+          )}
+          {tab === 'signup' && <SignupForm onSuccess={onClose} />}
+          {tab === 'reset'  && <ResetPasswordForm onBack={() => setTab('login')} />}
         </div>
 
-        {tab === 'login'
-          ? <LoginForm onSuccess={onClose} />
-          : <SignupForm onSuccess={onClose} />
-        }
       </div>
     </div>
   );
