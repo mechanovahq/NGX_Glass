@@ -216,16 +216,16 @@ export default function MarketView() {
               <div className="fg-lbl">{adv > dec ? 'Greed' : adv < dec ? 'Fear' : 'Neutral'}</div>
               <div className="fg-grid">
                 <div className="fg-item">
-                  <div className="fg-item-label">Advancing</div>
-                  <div className="fg-item-val" style={{ color: 'var(--pos)' }}>{adv}</div>
-                </div>
-                <div className="fg-item">
                   <div className="fg-item-label">Declining</div>
                   <div className="fg-item-val" style={{ color: 'var(--neg)' }}>{dec}</div>
                 </div>
                 <div className="fg-item">
                   <div className="fg-item-label">Unchanged</div>
                   <div className="fg-item-val" style={{ color: 'var(--muted)' }}>{unc}</div>
+                </div>
+                <div className="fg-item">
+                  <div className="fg-item-label">Advancing</div>
+                  <div className="fg-item-val" style={{ color: 'var(--pos)' }}>{adv}</div>
                 </div>
                 <div className="fg-item">
                   <div className="fg-item-label">A/D Ratio</div>
